@@ -1,0 +1,115 @@
+Option Explicit
+
+Private Sub UserForm_Initialize()
+    PrepararNuevoRegistro
+End Sub
+
+Private Sub PrepararNuevoRegistro()
+    Dim ws As Worksheet
+    Dim nuevoItem As Long
+
+    Set ws = ThisWorkbook.Worksheets("BASE DE DATOS ")
+    nuevoItem = SiguienteItem(ws)
+
+    Me.TextBox1.Value = CodigoDesdeItem(nuevoItem)
+    Me.TextBox1.Locked = True
+    Me.TextBox1.BackColor = VbWhite
+End Sub
+
+Private Sub CommandButton2_Click()
+    Dim ws As Worksheet
+    Dim tabla As ListObject
+    Dim nuevaFila As ListRow
+    Dim nuevoItem As Long
+
+    Set ws = ThisWorkbook.Worksheets("BASE DE DATOS ")
+    Set tabla = ws.ListObjects("CLIENTES")
+
+    ' El código no se captura manualmente.
+    nuevoItem = SiguienteItem(ws)
+    Me.TextBox1.Value = CodigoDesdeItem(nuevoItem)
+    Me.TextBox1.Locked = True
+
+    ReiniciarContador
+
+    ' Campos obligatorios.
+    ValidarRequerido Me.TextBox2      ' Edad
+    ValidarRequerido Me.TextBox3      ' Nombre
+    ValidarRequerido Me.TextBox4      ' Apellido materno
+    ValidarRequerido Me.TextBox5      ' Apellido paterno
+    ValidarRequerido Me.TextBox6      ' Fecha de nacimiento
+    ValidarRequerido Me.ComboBox1     ' Sexo
+    ValidarRequerido Me.TextBox7      ' Correo
+    ValidarRequerido Me.TextBox8      ' Teléfono
+    ValidarRequerido Me.TextBox10     ' Departamento / cargo
+    ValidarRequerido Me.TextBox11     ' Ciudad
+    ValidarRequerido Me.TextBox12     ' Dirección
+
+    ' Validaciones de formato separadas.
+    If Trim$(Me.TextBox2.Value) <> vbNullString Then ValidarNumero Me.TextBox2
+    If Trim$(Me.TextBox8.Value) <> vbNullString Then ValidarNumero Me.TextBox8
+    If Trim$(Me.TextBox6.Value) <> vbNullString Then ValidarFecha Me.TextBox6
+    If Trim$(Me.TextBox7.Value) <> vbNullString Then ValidarCorreo Me.TextBox7
+    ValidarSeleccion (Me.OptionButton1.Value Or Me.OptionButton2.Value Or _
+                      Me.OptionButton3.Value Or Me.OptionButton4.Value), Me.Frame2
+
+    If contador <> 0 Then
+        MsgBox "Por favor complete los campos vacíos o corrija los resaltados.", _
+               vbExclamation, "Datos pendientes"
+        Exit Sub
+    End If
+
+    Set nuevaFila = tabla.ListRows.Add
+
+    With nuevaFila.Range
+        .Cells(1, 1).Value = nuevoItem
+        .Cells(1, 2).Value = Me.TextBox1.Value
+        .Cells(1, 3).Value = Trim$(Me.TextBox5.Value) & " " & Trim$(Me.TextBox4.Value)
+        .Cells(1, 4).Value = Trim$(Me.TextBox3.Value)
+        .Cells(1, 7).Value = CDate(Me.TextBox6.Value)
+        .Cells(1, 8).Value = CLng(Me.TextBox2.Value)
+        .Cells(1, 9).Value = Me.ComboBox1.Value
+        .Cells(1, 10).Value = Trim$(Me.TextBox8.Value)
+        .Cells(1, 11).Value = Trim$(Me.TextBox7.Value)
+        .Cells(1, 12).Value = NivelEstudio(Me)
+        .Cells(1, 13).Value = Trim$(Me.TextBox11.Value)
+        .Cells(1, 14).Value = Trim$(Me.TextBox12.Value)
+        .Cells(1, 15).Value = Trim$(Me.TextBox9.Value)
+        .Cells(1, 16).Value = Trim$(Me.TextBox10.Value)
+    End With
+
+    MsgBox "Registro guardado con el código " & Me.TextBox1.Value & ".", _
+           vbInformation, "Registro correcto"
+
+    LimpiarFormulario
+    PrepararNuevoRegistro
+End Sub
+
+Private Sub LimpiarFormulario()
+    Dim control As Control
+
+    For Each control In Me.Controls
+        If TypeName(control) = "TextBox" And control.Name <> "TextBox1" Then
+            control.Value = vbNullString
+            control.BackColor = VbWhite
+        ElseIf TypeName(control) = "ComboBox" Then
+            control.Value = vbNullString
+            control.BackColor = VbWhite
+        ElseIf TypeName(control) = "OptionButton" Then
+            control.Value = False
+        End If
+    Next control
+End Sub
+
+' Retroalimentación inmediata al salir de cada campo.
+Private Sub TextBox2_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarNumero Me.TextBox2: End Sub
+Private Sub TextBox3_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox3: End Sub
+Private Sub TextBox4_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox4: End Sub
+Private Sub TextBox5_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox5: End Sub
+Private Sub TextBox6_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarFecha Me.TextBox6: End Sub
+Private Sub TextBox7_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarCorreo Me.TextBox7: End Sub
+Private Sub TextBox8_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarNumero Me.TextBox8: End Sub
+Private Sub TextBox10_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox10: End Sub
+Private Sub TextBox11_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox11: End Sub
+Private Sub TextBox12_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.TextBox12: End Sub
+Private Sub ComboBox1_Exit(ByVal Cancel As MSForms.ReturnBoolean): ReiniciarContador: ValidarRequerido Me.ComboBox1: End Sub
