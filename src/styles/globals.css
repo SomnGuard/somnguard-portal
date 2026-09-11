@@ -21,11 +21,27 @@
   --radius-button: 13px;
 }
 
+html { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   background: var(--bg-primary);
   color: var(--text);
   overflow-x: hidden;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.hero,
+.dashboard,
+.verify-page {
+  flex: 1 0 auto;
 }
 
 .hidden {
@@ -99,22 +115,11 @@ body {
   padding: 100px 40px 60px;
   position: relative;
   overflow: hidden;
+  isolation: isolate; /* crea stacking context para que ::before no compita con logo */
 }
 
 .hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(0, 200, 200, 0.08) 0%, transparent 50%);
-  animation: pulse 8s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 0.8; }
+  display: none;
 }
 
 .hero-content {
@@ -276,7 +281,7 @@ body {
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .form-label {
@@ -320,17 +325,23 @@ body {
 .field-error {
   color: var(--error);
   font-size: 13px;
-  margin-top: 8px;
-  min-height: 16px;
-  line-height: 1.4;
+  margin-top: 4px;
+  min-height: 0;
+  line-height: 1.35;
 }
-
+.field-error:empty,
+.form-error:empty {
+  display: none;
+  margin: 0;
+  min-height: 0;
+}
 .field-hint {
   color: var(--text-muted);
   font-size: 12px;
-  margin-top: 6px;
-  line-height: 1.4;
+  margin-top: 3px;
+  line-height: 1.35;
 }
+.field-hint:empty { display: none; }
 
 .btn-submit {
   width: 100%;
@@ -429,7 +440,7 @@ body {
 
 /* Strength meter */
 .strength {
-  margin-top: 8px;
+  margin-top: 4px;
   display: flex;
   gap: 6px;
   align-items: center;
@@ -458,7 +469,7 @@ body {
 .register-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 0;
 }
 .register-grid .form-group {
@@ -744,10 +755,13 @@ body {
 @media (max-width: 968px) {
   .hero { padding: 90px 24px 50px; min-height: auto; }
   .hero-content {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    gap: 36px;
+    gap: 28px;
   }
+  .hero-right { order: 1; }
+  .hero-left { order: 2; align-items: center; }
   .hero-left { align-items: center; }
   .hero-title {
     font-size: 42px;
@@ -948,4 +962,72 @@ body {
 .verify-card .form-success {
   word-break: break-word;
   overflow-wrap: anywhere;
+}
+
+/* Footer — SomnGuard */
+.footer {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  padding: 28px 40px;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  margin-top: auto;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.footer-logo {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.footer-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(0,200,200,0.08);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.footer-sep {
+  opacity: 0.4;
+}
+
+@media (max-width: 640px) {
+  .footer { padding: 20px 16px; padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .footer-links { gap: 8px; }
 }

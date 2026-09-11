@@ -5,6 +5,7 @@ import { Dashboard } from '../features/dashboard/ui/Dashboard';
 import { AuthModals } from '../features/auth/ui/AuthModals';
 import { VerifyEmailPage } from '../features/auth/ui/VerifyEmailPage';
 import { ResetPasswordPage } from '../features/auth/ui/ResetPasswordPage';
+import { Footer } from '../shared/ui/Footer';
 import { useAuth } from '../features/auth/model/AuthContext';
 import { useSoloLogoAnimation } from '../shared/hooks/useSoloLogoAnimation';
 
@@ -135,6 +136,7 @@ export default function App() {
           onBack={handleResetBack}
           onSuccess={handleResetSuccess}
         />
+        <Footer />
       </>
     );
   }
@@ -150,6 +152,7 @@ export default function App() {
           onBack={handleVerifyBack}
           onSuccess={handleVerifySuccess}
         />
+        <Footer />
       </>
     );
   }
@@ -176,6 +179,7 @@ export default function App() {
         onRegister={handleRegister}
         onForgot={forgot}
       />
+      <Footer />
     </>
   );
 }
