@@ -133,7 +133,8 @@ Sin `VITE_USE_MOCK`. Todo va contra backend real. Si falta, `client.ts` lanza `A
 **Requisitos:** Node 18+
 
 ```bash
-cd Somnguard-web
+cd somnguard-portal
+cp .env.example .env
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # tsc -b && vite build -> dist/
