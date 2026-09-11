@@ -1,11 +1,13 @@
-export const nameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,60}$/;
-export const firstNameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{2,30}$/;
-export const lastNameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{2,30}$/;
+export const nameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,30}$/;
+export const firstNameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,30}$/;
+export const lastNameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]{3,30}$/;
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-export const phoneRegex = /^\+?[0-9]{7,15}$/;
+export const phoneRegex = /^\+?[0-9]{7,30}$/;
 
 export function isValidEmail(email: string): boolean {
-  return emailRegex.test(String(email).trim().toLowerCase());
+  const v = String(email).trim().toLowerCase();
+  if (v.length > 50) return false;
+  return emailRegex.test(v);
 }
 
 export function isValidName(name: string): boolean {
@@ -29,7 +31,7 @@ export function isStrongPassword(password: string): boolean {
   const value = String(password);
   return (
     value.length >= 8 &&
-    value.length <= 20 &&
+    // sin límite máximo por entidad (AC), solo mínimo 8 + complejidad
     /[a-z]/.test(value) &&
     /[A-Z]/.test(value) &&
     /\d/.test(value) &&
@@ -56,7 +58,7 @@ export function getPasswordStrength(password: string): { label: string; percent:
 }
 
 export function sanitizeName(value: string): string {
-  return value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '').slice(0, 60);
+  return value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '').slice(0, 30);
 }
 
 export function sanitizeFirstName(value: string): string {
@@ -68,12 +70,12 @@ export function sanitizeLastName(value: string): string {
 }
 
 export function sanitizeEmail(value: string): string {
-  return value.replace(/\s/g, '').toLowerCase().slice(0, 254);
+  return value.replace(/\s/g, '').toLowerCase().slice(0, 50);
 }
 
 export function sanitizePhone(value: string): string {
   // permite +, dígitos, espacios, guiones, paréntesis; luego se normaliza en validación
-  return value.replace(/[^0-9+\s\-()]/g, '').slice(0, 20);
+  return value.replace(/[^0-9+\s\-()]/g, '').slice(0, 30);
 }
 
 export function sanitizePasswordNoSpaces(value: string): string {
@@ -108,6 +110,7 @@ export function validateLogin(email: string, password: string): { valid: boolean
   const errors: LoginErrors = {};
   const e = email.trim().toLowerCase();
   if (!e) errors.email = 'El correo es obligatorio.';
+  else if (e.length > 50) errors.email = 'Máximo 50 caracteres.';
   else if (!isValidEmail(e)) errors.email = 'Ingresa un correo válido (ej: usuario@dominio.com).';
 
   if (!password) errors.password = 'La contraseña es obligatoria.';
@@ -141,21 +144,25 @@ export function validateRegister(
   const ph = phone.trim();
 
   if (!fn) errors.firstName = 'El nombre es obligatorio.';
-  else if (fn.length < 2) errors.firstName = 'Mínimo 2 caracteres.';
-  else if (!isValidFirstName(fn)) errors.firstName = 'Solo letras y espacios. Mínimo 2 caracteres.';
+  else if (fn.length < 3) errors.firstName = 'Mínimo 3 caracteres.';
+  else if (fn.length > 30) errors.firstName = 'Máximo 30 caracteres.';
+  else if (!isValidFirstName(fn)) errors.firstName = 'Solo letras y espacios. 3-30 caracteres.';
 
   if (!ln) errors.lastName = 'El apellido es obligatorio.';
-  else if (ln.length < 2) errors.lastName = 'Mínimo 2 caracteres.';
-  else if (!isValidLastName(ln)) errors.lastName = 'Solo letras y espacios. Mínimo 2 caracteres.';
+  else if (ln.length < 3) errors.lastName = 'Mínimo 3 caracteres.';
+  else if (ln.length > 30) errors.lastName = 'Máximo 30 caracteres.';
+  else if (!isValidLastName(ln)) errors.lastName = 'Solo letras y espacios. 3-30 caracteres.';
 
   if (!e) errors.email = 'El correo es obligatorio.';
+  else if (e.length > 50) errors.email = 'Máximo 50 caracteres.';
   else if (!isValidEmail(e)) errors.email = 'Ingresa un correo válido.';
 
   if (!ph) errors.phone = 'El teléfono es obligatorio.';
-  else if (!isValidPhone(ph)) errors.phone = 'Teléfono inválido. Usa 7-15 dígitos, opcional + al inicio.';
+  else if (ph.length > 30) errors.phone = 'Máximo 30 caracteres.';
+  else if (!isValidPhone(ph)) errors.phone = 'Teléfono inválido. Usa 7-30 dígitos, opcional + al inicio.';
 
   if (!password) errors.password = 'La contraseña es obligatoria.';
-  else if (!isStrongPassword(password)) errors.password = 'Debe tener 8-20 caracteres, mayúscula, minúscula, número y símbolo, sin espacios.';
+  else if (!isStrongPassword(password)) errors.password = 'Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo, sin espacios.';
 
   if (!confirm) errors.confirm = 'Confirma la contraseña.';
   else if (password !== confirm) errors.confirm = 'Las contraseñas no coinciden.';
@@ -172,6 +179,7 @@ export function validateForgot(email: string): { valid: boolean; errors: ForgotE
   const errors: ForgotErrors = {};
   const e = email.trim().toLowerCase();
   if (!e) errors.email = 'El correo es obligatorio.';
+  else if (e.length > 50) errors.email = 'Máximo 50 caracteres.';
   else if (!isValidEmail(e)) errors.email = 'Ingresa un correo válido.';
   return { valid: Object.keys(errors).length === 0, errors };
 }
