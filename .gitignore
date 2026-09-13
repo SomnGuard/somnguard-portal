@@ -1,0 +1,68 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+build
+out
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Env - keep .env.example
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# Coverage & cache
+coverage
+.nyc_output
+.eslintcache
+.cache
+.parcel-cache
+.vite
+.turbo
+
+# TypeScript
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+*.sw?
+*~
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.code-workspace
+
+# Playwright / Test
+/test-results/
+/playwright-report/
+/playwright/.cache/
+play-screenshot*.png
+
+# Temp
+tmp
+temp
+.opencode
+*.tmp
+*.temp
