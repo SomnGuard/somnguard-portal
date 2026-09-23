@@ -216,7 +216,8 @@ export function isValidResetPassword(password: string): boolean {
 
 export function validateResetPassword(token: string, newPassword: string, confirm: string): { valid: boolean; errors: ResetPasswordErrors } {
   const errors: ResetPasswordErrors = {};
-  if (!token.trim()) errors.token = 'El enlace de recuperación no es válido o ha expirado.';
+  if (!token.trim()) errors.token = 'Este código ya no es válido. Solicita un nuevo código.';
+  else if (!/^\d{6}$/.test(token.trim())) errors.token = 'El código ingresado es incorrecto.';
   if (!newPassword) errors.newPassword = 'La nueva contraseña es obligatoria.';
   else if (!isValidResetPassword(newPassword)) errors.newPassword = 'Debe tener 8-72 caracteres, mayúscula, minúscula, número y símbolo, sin espacios.';
   if (!confirm) errors.confirm = 'Confirma la contraseña.';

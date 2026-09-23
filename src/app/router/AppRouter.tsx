@@ -5,7 +5,7 @@ import { UserLayout } from '../layouts/UserLayout';
 import { RequireAuth } from './guards/RequireAuth';
 import { RequireRole } from './guards/RequireRole';
 import { paths } from './paths';
-import { VerifyEmailRoute, ResetPasswordRoute } from './AuthFlowRoutes';
+import { VerifyEmailRoute, VerifyResetCodeRoute, ResetPasswordRoute } from './AuthFlowRoutes';
 import { AdminDashboard } from '../../features/dashboard/ui/AdminDashboard';
 import { UserDashboard } from '../../features/dashboard/ui/UserDashboard';
 import { SecurityPage } from '../../features/security/ui/SecurityPage';
@@ -26,6 +26,7 @@ export function AppRouter() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path={paths.public.verifyEmail} element={<VerifyEmailRoute />} />
+        <Route path={paths.public.verifyResetCode} element={<VerifyResetCodeRoute />} />
         <Route path={paths.public.resetPassword} element={<ResetPasswordRoute />} />
         <Route path={paths.public.home} element={<HomeRoute />} />
       </Route>

@@ -11,6 +11,7 @@ interface AuthState {
   register: (payload: RegisterPayload) => Promise<void>;
   verifyEmail: (payload: VerifyEmailPayload) => Promise<string>;
   forgot: (email: string) => Promise<string>;
+  verifyResetCode: (code: string) => Promise<string>;
   resetPassword: (token: string, newPassword: string) => Promise<string>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
@@ -114,6 +115,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return res.message;
   }, []);
 
+  const verifyResetCode = useCallback(async (code: string) => {
+    const res = await api.verifyResetCodeApi(code);
+    return res.message;
+  }, []);
+
   const resetPassword = useCallback(async (token: string, newPassword: string) => {
     const res = await api.resetPasswordApi({ token, newPassword });
     return res.message;
@@ -147,10 +153,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     verifyEmail,
     forgot,
+    verifyResetCode,
     resetPassword,
     refresh,
     logout,
-  }), [user, isInitializing, login, register, verifyEmail, forgot, resetPassword, refresh, logout]);
+  }), [user, isInitializing, login, register, verifyEmail, forgot, verifyResetCode, resetPassword, refresh, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

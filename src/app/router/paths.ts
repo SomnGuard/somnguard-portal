@@ -5,6 +5,7 @@ export const paths = {
     home: '/',
     login: '/',
     verifyEmail: '/verify-email',
+    verifyResetCode: '/verify-reset-code',
     resetPassword: '/reset-password',
   },
   admin: {

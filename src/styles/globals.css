@@ -179,7 +179,7 @@ body {
 }
 
 .btn-download:hover {
-  background: #00e5e5;
+  background: #ffffff;
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(0, 200, 200, 0.3);
 }
