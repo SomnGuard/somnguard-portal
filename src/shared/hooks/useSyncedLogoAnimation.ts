@@ -73,8 +73,8 @@ export function useSyncedLogoAnimation(headerId = 'headerLogo', heroId = 'heroLo
     };
 
     const getCurrentSets = (): { headerSet: LogoSet | null; heroSet: LogoSet | null } => {
-      const headerSvg = document.getElementById(headerId) as SVGSVGElement | null;
-      const heroSvg = document.getElementById(heroId) as SVGSVGElement | null;
+      const headerSvg = document.getElementById(headerId) as unknown as SVGSVGElement | null;
+      const heroSvg = document.getElementById(heroId) as unknown as SVGSVGElement | null;
       const headerSet = headerSvg ? getSet(headerSvg) : null;
       const heroSet = heroSvg ? getSet(heroSvg) : null;
       return { headerSet, heroSet };

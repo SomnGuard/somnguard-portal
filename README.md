@@ -6,7 +6,7 @@ Frontend web para monitoreo de somnolencia al volante. Migrado a **Arquitectura 
 
 - **Vite 8.2.2** + `@vitejs/plugin-react 6.1.0`
 - **React 19.2.8** + **TypeScript 6.0.2**
-- Sin Router / Redux — `Context API` + `localStorage` + `fetch` nativo
+- Router: `react-router-dom 7.18.4` + Context API + `localStorage` + `fetch` nativo
 - Lint: `oxlint`
 
 ## Estructura del proyecto
@@ -152,3 +152,21 @@ npm run lint     # oxlint
 ## Migración
 
 De plano (`components/context/hooks/utils` + `services/api.ts` monolítico con mocks y `admin@somnguard.com`) a feature-based (`app/features/shared/entities`) + `shared/api` cliente centralizado sin datos quemados. Shims en `src/components|context|hooks|utils|App.tsx` mantienen compatibilidad.
+
+## Routing por rol — ejemplo incluido
+
+El proyecto ahora incluye una SPA con routing por rol:
+
+```text
+/admin/*  -> AdminLayout
+/user/*   -> UserLayout
+```
+
+Guards disponibles:
+
+- `RequireAuth`: sesión obligatoria.
+- `RequireRole`: rol permitido.
+- `RequirePermission`: permiso concreto.
+
+Consulta `docs/RBAC-ARCHITECTURE.md` y `docs/ADDING-MODULES.md` para ver el flujo y cómo ampliar módulos/roles.
+
