@@ -48,10 +48,10 @@ export function useSoloLogoAnimation(heroId = 'heroLogo') {
       return { svg, pupil, pill, pillClip, mouth };
     };
 
-    const heroSvg = document.getElementById(heroId) as SVGSVGElement | null;
+    const heroSvg = document.getElementById(heroId) as unknown as SVGSVGElement | null;
     if (!heroSvg) {
       const t = setTimeout(() => {
-        const retry = document.getElementById(heroId) as SVGSVGElement | null;
+        const retry = document.getElementById(heroId) as unknown as SVGSVGElement | null;
         if (!retry) return;
         const set = getSet(retry);
         if (!set) return;
