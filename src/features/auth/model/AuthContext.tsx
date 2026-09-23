@@ -7,7 +7,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isInitializing: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   register: (payload: RegisterPayload) => Promise<void>;
   verifyEmail: (payload: VerifyEmailPayload) => Promise<string>;
   forgot: (email: string) => Promise<string>;
@@ -33,14 +33,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const scheduleSilentRefresh = useCallback((expiresInSec?: number) => {
     clearRefreshTimer();
-    // por defecto 15min (900s) - refresca 60s antes
     const sec = expiresInSec && expiresInSec > 70 ? expiresInSec - 60 : 840;
     refreshTimerRef.current = window.setTimeout(async () => {
       try {
         await api.refreshApi().then((res) => {
-          // actualiza storage silencioso sin disparar UI
           const current = getUser<User>();
-          if (current) {
+          if (current && res.token) {
             const updated = { ...current, token: res.token, refreshToken: res.refreshToken ?? current.refreshToken };
             setStoredUser(updated);
             setTokens(res.token, res.refreshToken);
@@ -49,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         });
       } catch {
-        // si falla, el interceptor 401 ya limpiará sesión
         clearRefreshTimer();
       }
     }, sec * 1000);
@@ -59,15 +56,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hydrateMemoryFromStorage();
     const parsed = getUser<User>();
     if (parsed?.email) {
-      setUser(parsed);
-      // si ya hay sesión, programa refresh silencioso
-      scheduleSilentRefresh(900);
+      const restored: User = {
+        ...parsed,
+        name: parsed.name ?? parsed.email.split('@')[0],
+        roles: Array.isArray(parsed.roles) ? parsed.roles : [],
+        permissions: Array.isArray(parsed.permissions) ? parsed.permissions : [],
+      };
+      setUser(restored);
+      if (restored.token || restored.refreshToken) scheduleSilentRefresh(900);
     }
     setIsInitializing(false);
     return () => clearRefreshTimer();
   }, [clearRefreshTimer, scheduleSilentRefresh]);
 
-  // AC-004: si el refresh silencioso falla (401), cierra sesión automáticamente
   useEffect(() => {
     const onExpired = () => {
       setUser(null);
@@ -83,9 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (u) {
       setStoredUser(u);
       setTokens(u.token ?? null, u.refreshToken ?? null);
-      // schedule con expiresIn si viene (por defecto 15min)
-      const expiresIn = (u as unknown as { expiresIn?: number }).expiresIn as number | undefined;
-      scheduleSilentRefresh(expiresIn);
+      if (u.token || u.refreshToken) scheduleSilentRefresh(900);
     } else {
       clearUser();
       clearTokens();
@@ -93,21 +92,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [scheduleSilentRefresh, clearRefreshTimer]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<User> => {
     const u = await api.loginApi(email, password);
     setUser(u);
     persist(u);
+    return u;
   }, [persist]);
 
+
+
   const register = useCallback(async (payload: RegisterPayload) => {
-    // Crear una cuenta no equivale a autenticarla. El backend envía el correo
-    // de confirmación en este paso y el usuario debe validarlo antes de poder
-    // iniciar sesión.
     await api.registerApi(payload);
   }, []);
 
   const verifyEmail = useCallback(async (payload: VerifyEmailPayload) => {
-    // payload ahora es { code: "123456" } con alias token para compatibilidad
     const res = await api.verifyEmailApi(payload);
     return res.message;
   }, []);
@@ -129,7 +127,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(async () => {
     const res = await api.refreshApi();
-    // actualiza solo token en usuario actual
     setUser((prev) => {
       if (!prev) return prev;
       const updated = { ...prev, token: res.token, refreshToken: res.refreshToken ?? prev.refreshToken };
@@ -141,7 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await api.logoutApi();
-    } catch { /* ignora error de red al desloguear */ }
+    } catch {
+      // logout local aun si el backend no responde
+    }
     setUser(null);
     persist(null);
   }, [persist]);

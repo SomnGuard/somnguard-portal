@@ -30,8 +30,8 @@ async function silentRefresh(): Promise<string | null> {
   isRefreshing = true;
   try {
     const refreshToken = getRefreshToken();
-    // Si backend usa httpOnly cookies, el refresh va sin body y con credentials
-    const body = refreshToken ? { refreshToken } : {};
+    // Backend usa snake_case (ver login: access_token/refresh_token).
+    const body = refreshToken ? { refresh_token: refreshToken } : {};
     const res = await fetch(endpoints.auth.refresh, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -40,8 +40,8 @@ async function silentRefresh(): Promise<string | null> {
     });
     if (!res.ok) throw new Error(`refresh ${res.status}`);
     if (res.status === 204) return null;
-    const data = (await res.json().catch(() => ({}))) as { accessToken?: string; token?: string; refreshToken?: string; refresh_token?: string };
-    const newAccess = data.accessToken ?? data.token ?? null;
+    const data = (await res.json().catch(() => ({}))) as { accessToken?: string; access_token?: string; token?: string; refreshToken?: string; refresh_token?: string };
+    const newAccess = data.accessToken ?? data.access_token ?? data.token ?? null;
     const newRefresh = data.refreshToken ?? data.refresh_token ?? null;
     if (newAccess || newRefresh) setTokens(newAccess ?? getAccessToken(), newRefresh ?? getRefreshToken());
     return newAccess;
