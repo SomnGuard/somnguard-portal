@@ -23,6 +23,7 @@ export const endpoints = {
     forgotPassword: `${urlBase}/auth/forgot-password`,
     resetPassword: `${urlBase}/auth/reset-password`,
     forgot: `${urlBase}/auth/forgot-password`,
+    verifyResetCode: `${urlBase}/auth/verify-reset-code`,
   },
   
 } as const;

@@ -111,8 +111,25 @@ export function getUserMessage(error: unknown): string {
         return 'Este correo ya está registrado. Intenta iniciar sesión o recuperar tu contraseña.';
       case 'PHONE_CONFLICT':
         return 'Este teléfono ya está registrado con otra cuenta.';
-      case 'BAD_REQUEST':
+      case 'BAD_REQUEST': {
+        const m = (error.message || '').toLowerCase();
+        const detailsStr = error.details.map((d) => `${d.field} ${d.issue}`.toLowerCase()).join(' ');
+        const combined = `${m} ${detailsStr}`;
+        // No exponer detalles técnicos como IllegalArgumentException ni stack traces
+        if (combined.includes('illegalargument') || combined.includes('exception') || combined.includes('stack') || combined.includes('java.lang')) {
+          if (combined.includes('expir')) return 'El código ha expirado. Solicita un nuevo código.';
+          if (combined.includes('utilizado') || combined.includes('usado') || combined.includes('consumido') || combined.includes('ya no es válido')) return 'Este código ya no es válido. Solicita un nuevo código.';
+          if (combined.includes('código') || combined.includes('codigo') || combined.includes('token') || combined.includes('code')) return 'El código ingresado es incorrecto o ha expirado.';
+          return 'Solicitud inválida. Revisa los datos e intenta de nuevo.';
+        }
+        if (combined.includes('código') || combined.includes('codigo') || combined.includes('token') || combined.includes('code')) {
+          if (combined.includes('expir')) return 'El código ha expirado. Solicita un nuevo código.';
+          if (combined.includes('utilizado') || combined.includes('usado') || combined.includes('consumido') || combined.includes('ya no es válido')) return 'Este código ya no es válido. Solicita un nuevo código.';
+          if (combined.includes('incorrecto') || combined.includes('inválido') || combined.includes('invalido')) return 'El código ingresado es incorrecto.';
+          return 'El código ingresado es incorrecto o ha expirado.';
+        }
         return error.message || 'Solicitud inválida. Revisa los datos e intenta de nuevo.';
+      }
       case 'FORBIDDEN':
         return 'No tienes permiso para realizar esta acción.';
       case 'NOT_FOUND':
@@ -122,6 +139,13 @@ export function getUserMessage(error: unknown): string {
       case 'INTERNAL_ERROR':
         return 'Error interno del servidor. Intenta más tarde.';
       default: {
+        const lower = (error.message || '').toLowerCase();
+        // Nunca exponer IllegalArgumentException, stack traces u otros detalles técnicos
+        if (lower.includes('illegalargument') || lower.includes('exception') || lower.includes('stack') || lower.includes('java.lang')) {
+          if (lower.includes('expir')) return 'El código ha expirado. Solicita un nuevo código.';
+          if (lower.includes('código') || lower.includes('codigo') || lower.includes('token')) return 'El código ingresado es incorrecto o ha expirado.';
+          return 'Ocurrió un error. Intenta de nuevo.';
+        }
         // Si es 400 con mensaje de backend en español, úsalo tal cual (ej. "Contraseña actualizada")
         // pero limita longitud y evita exponer detalles técnicos
         if (error.status >= 400 && error.status < 500 && error.message && error.message.length < 120) {
@@ -164,6 +188,9 @@ function normalizeField(field: string): string {
   // backend usa camelCase: firstName, lastName, newPassword ; a veces snake: new_password
   if (f === 'new_password') return 'newPassword';
   if (f === 'refresh_token' || f === 'refreshToken') return 'refreshToken';
+  // el backend puede usar 'code' o 'token' para el código de 6 dígitos
+  if (f === 'code') return 'code';
+  if (f === 'token') return 'token';
   return f;
 }
 

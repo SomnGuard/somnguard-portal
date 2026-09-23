@@ -440,13 +440,14 @@ function ForgotModal({ open, onClose, onSwitch, onForgot }: { open: boolean; onC
     setSubmitting(true);
     try {
       await onForgot(sanitizeEmail(email));
-      const linkMsg = 'Si existe una cuenta asociada a este correo, se envió un enlace para restablecer la contraseña.';
-      setSuccess(linkMsg);
-      toast({ title: 'Correo enviado', msg: linkMsg, type: 'success' });
+      const codeMsg = 'Si el correo existe, se envió un código de 6 dígitos con expiración 15 minutos';
+      setSuccess(codeMsg);
+      toast({ title: 'Código enviado', msg: 'Recibirás un código de 6 dígitos en tu correo.', type: 'success' });
+      // Cierre rápido: el flujo de recuperación (verify-code) lo maneja App.tsx tras el éxito del endpoint
       setTimeout(() => {
         setEmail(''); setSuccess(''); setTouched(false);
         onClose();
-      }, 1800);
+      }, 400);
     } catch (err: unknown) {
       if (err instanceof ApiError && err.details.length > 0) {
         const fieldErrors = mapDetailsToFieldErrors(err.details);
@@ -492,14 +493,14 @@ function ForgotModal({ open, onClose, onSwitch, onForgot }: { open: boolean; onC
             autoComplete="email"
           />
           <div className="field-error" id="forgotEmailError">{errors.email || ''}</div>
-          <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 8 }}>Te enviaremos un enlace para restablecer tu contraseña</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 8 }}>Te enviaremos un código de 6 dígitos para restablecer tu contraseña</p>
         </div>
 
         {apiError && <div className="form-error" style={{ display: 'block' }} role="alert">{apiError}</div>}
         {success && <div className="form-success" role="status">{success}</div>}
         <button type="submit" className="btn-submit" id="forgotBtn" disabled={submitting}>
           {submitting && <span className="spinner" aria-hidden />}
-          {submitting ? 'Enviando...' : 'Enviar enlace'}
+          {submitting ? 'Enviando...' : 'Enviar código'}
         </button>
       </form>
 

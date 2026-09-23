@@ -71,9 +71,15 @@ export async function verifyEmailApi(payload: VerifyEmailPayload): Promise<{ mes
   return httpRequest<{ message: string }>(endpoints.auth.verifyEmail, HTTP.POST, { code: payload.code });
 }
 
-// POST /api/v1/auth/forgot { email } -> { message } (legacy, si no existe en tu backend usa verifyEmail)
+// POST /api/v1/auth/forgot-password { email } -> { message }
 export async function forgotPasswordApi(email: string): Promise<{ message: string }> {
   return httpRequest<{ message: string }>(endpoints.auth.forgot, HTTP.POST, { email });
+}
+
+// POST /api/v1/auth/verify-reset-code { code: "147782" } -> { message }
+// Backend acepta alias token/code, solo valida (no consume). 400 si inválido/expirado
+export async function verifyResetCodeApi(code: string): Promise<{ message: string }> {
+  return httpRequest<{ message: string }>(endpoints.auth.verifyResetCode, HTTP.POST, { code });
 }
 
 // POST /api/v1/auth/refresh { refreshToken } -> LoginResponse { accessToken, refreshToken }
