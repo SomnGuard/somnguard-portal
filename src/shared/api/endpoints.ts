@@ -11,7 +11,24 @@ if (!urlBase) {
   console.warn('[endpoints] VITE_API_URL no definido en .env');
 }
 
+function deriveHealthUrl(base: string): string {
+  if (!base) return '';
+  // VITE_API_URL=http://host:8080/api/v1 -> http://host:8080/actuator/health
+  return base.replace(/\/api\/v1\/?$/, '') + '/actuator/health';
+}
 
+function deriveWsUrl(): string {
+  const explicit = import.meta.env.VITE_STREAM_WS_URL as string | undefined;
+  if (explicit) return explicit.replace(/\/$/, '');
+  if (!urlBase) return '';
+  try {
+    const u = new URL(urlBase);
+    const proto = u.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${proto}//${u.host}/ws/stream`;
+  } catch {
+    return '';
+  }
+}
 
 export const endpoints = {
   auth: {
@@ -25,7 +42,15 @@ export const endpoints = {
     forgot: `${urlBase}/auth/forgot-password`,
     verifyResetCode: `${urlBase}/auth/verify-reset-code`,
   },
-  
+  stream: {
+    start: (deviceId: string) => `${urlBase}/devices/${deviceId}/stream/start`,
+    stop: (deviceId: string) => `${urlBase}/devices/${deviceId}/stream/stop`,
+    session: (deviceId: string) => `${urlBase}/devices/${deviceId}/stream/session`,
+    detection: (deviceId: string) => `${urlBase}/devices/${deviceId}/stream/detection`,
+    device: (deviceId: string) => `${urlBase}/devices/${deviceId}`,
+    health: deriveHealthUrl(urlBase),
+    ws: deriveWsUrl(),
+  },
 } as const;
 
 export const HTTP = {
