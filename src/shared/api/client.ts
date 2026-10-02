@@ -27,11 +27,12 @@ function processQueue(error: unknown): void {
 
 async function silentRefresh(): Promise<string | null> {
   if (isRefreshing) return null;
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return null;
   isRefreshing = true;
   try {
-    const refreshToken = getRefreshToken();
     // Backend usa snake_case (ver login: access_token/refresh_token).
-    const body = refreshToken ? { refresh_token: refreshToken } : {};
+    const body = { refresh_token: refreshToken };
     const res = await fetch(endpoints.auth.refresh, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -56,7 +57,7 @@ async function silentRefresh(): Promise<string | null> {
   }
 }
 
-export async function httpRequest<T>(url: string, method: string, data: unknown = null, _retry = true): Promise<T> {
+export async function httpRequest<T>(url: string, method: string, data: unknown = null, _retry = true, silentStatuses: number[] = []): Promise<T> {
   const token = getAccessToken();
 
   const headers: Record<string, string> = {
@@ -80,7 +81,9 @@ export async function httpRequest<T>(url: string, method: string, data: unknown 
   if (!response.ok) {
     const errorBody: unknown = await response.json().catch(() => ({}));
     const apiError = parseApiError(response.status, errorBody);
-    logApiError(`httpRequest ${method} ${url} -> ${response.status}`, apiError);
+    if (!silentStatuses.includes(apiError.status)) {
+      logApiError(`httpRequest ${method} ${url} -> ${response.status}`, apiError);
+    }
 
     // AC-004 refresh silencioso: si 401 y no es /login ni /refresh, intenta renovar y reintenta una vez
     const isAuthUrl = url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/register');

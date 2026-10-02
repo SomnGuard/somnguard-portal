@@ -1,3 +1,5 @@
+import { AutoLiveBox } from '../../streaming/ui/AutoLiveBox';
+
 export function UserDashboard() {
   return (
     <section>
@@ -10,13 +12,7 @@ export function UserDashboard() {
         <div className="page-actions"></div>
       </header>
       <section className="panel">
-        <div className="empty-state">
-          <div>
-            <div className="state-icon">◌</div>
-            <h2>Dashboard vacío</h2>
-            <p>Aún no hay contenido para mostrar en este módulo.</p>
-          </div>
-        </div>
+        <AutoLiveBox />
       </section>
     </section>
   );
