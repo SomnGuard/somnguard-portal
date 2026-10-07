@@ -15,7 +15,6 @@ export function AutoLiveBox() {
   const [deviceStatus, setDeviceStatus] = useState('');
   const [frames, setFrames] = useState(0);
   const [note, setNote] = useState('Buscando tu dispositivo…');
-  const [wsOk, setWsOk] = useState(false);
   const [camOn, setCamOn] = useState(true);
   const [rtcOn, setRtcOn] = useState(false);
   const [detectPaused, setDetectPaused] = useState(false);
@@ -179,11 +178,14 @@ export function AutoLiveBox() {
         }
       }
       if (!camOnRef.current) return false;
-      // Fase 2: SFU LiveKit primero (fuera de red local); relay si no hay.
+      // Fase 2: SFU LiveKit con tope 4s (si no conecta ya, el relay es más rápido).
       if (lkUrl && lkToken) {
-        const ok = await connectLiveKit(lkUrl, lkToken);
+        const ok = await Promise.race([
+          connectLiveKit(lkUrl, lkToken),
+          new Promise<boolean>((r) => window.setTimeout(() => r(false), 4000)),
+        ]);
         if (ok) return true;
-        log('LiveKit no disponible, sigue relay…');
+        log('LiveKit lento, sigue relay…');
       }
       return new Promise<boolean>((resolve) => {
         try {
@@ -192,15 +194,14 @@ export function AutoLiveBox() {
           resolve(false);
           return;
         }
-        const to = window.setTimeout(() => { try { ws?.close(); } catch { /* noop */ } resolve(false); }, 5000);
+        const to = window.setTimeout(() => { try { ws?.close(); } catch { /* noop */ } resolve(false); }, 20000);
         ws.onopen = () => {
-          if (alive) setWsOk(true);
           log('Conectado, esperando video…');
           ws?.send(JSON.stringify({ type: 'subscribe', session_id: sessionId }));
           ws?.send(JSON.stringify({ type: 'request-offer', session_id: sessionId }));
           if (devId) ws?.send(JSON.stringify({ type: 'subscribe-status', device_id: devId }));
         };
-        ws.onclose = () => { if (alive) setWsOk(false); window.clearTimeout(to); resolve(framesRef.current > 0); };
+        ws.onclose = () => { window.clearTimeout(to); resolve(framesRef.current > 0); };
         ws.onerror = () => { window.clearTimeout(to); resolve(false); };
         ws.onmessage = (ev) => {
           try {
@@ -393,18 +394,14 @@ export function AutoLiveBox() {
   };
 
   const hasVideo = (frames > 0 || rtcOn) && camOn;
-  const dot = deviceStatus === 'DEVICE_ACTIVE' ? '#22c55e'
-    : deviceStatus === 'DEVICE_OFFLINE' ? '#eab308'
-    : deviceStatus ? '#ef4444' : '#9ca3af';
+  const systemActive = deviceStatus === 'DEVICE_ACTIVE';
+  const dot = !deviceId ? '#9ca3af' : systemActive ? '#22c55e' : '#eab308';
 
   return (
-    <div className="simple-panel">
-      <h2>Mi dispositivo en vivo</h2>
+    <div className="simple-panel user-auto-live-card">
       <p className="muted">
         <span className="net-dot" title={deviceStatus || 'buscando'} style={{ background: dot, display: 'inline-block', width: 10, height: 10, borderRadius: '50%', marginRight: 6 }} />
-        {deviceId ? `Device ${deviceId.slice(0, 8)} · ${deviceStatus || '…'}` : 'Buscando dispositivo…'}
-        {wsOk && camOn ? ' · conectado' : ''}
-        {hasVideo ? ` · ${frames} frames` : ''}
+        {!deviceId ? 'Buscando dispositivo…' : systemActive ? 'Sistema activo' : 'Sistema inactivo'}
       </p>
       <div
         className="live-box"

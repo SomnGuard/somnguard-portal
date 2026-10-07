@@ -8,6 +8,10 @@ import { paths } from './paths';
 import { VerifyEmailRoute, VerifyResetCodeRoute, ResetPasswordRoute } from './AuthFlowRoutes';
 import { AdminDashboard } from '../../features/dashboard/ui/AdminDashboard';
 import { UserDashboard } from '../../features/dashboard/ui/UserDashboard';
+import { MyAlertsPage } from '../../features/user-alerts/ui/MyAlertsPage';
+import { MyEventsPage } from '../../features/user-events/ui/MyEventsPage';
+import { MyDevicePage } from '../../features/user-device/ui/MyDevicePage';
+import { NotificationPreferencesPage } from '../../features/user-alerts/ui/NotificationPreferencesPage';
 import { SecurityPage } from '../../features/security/ui/SecurityPage';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { useAuth } from '../../features/auth/model/AuthContext';
@@ -46,6 +50,10 @@ export function AppRouter() {
           <Route path={paths.user.root} element={<UserLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="monitoreo" element={<MyDevicePage />} />
+            <Route path="my-alerts" element={<MyAlertsPage />} />
+            <Route path="my-events" element={<MyEventsPage />} />
+            <Route path="preferences" element={<NotificationPreferencesPage />} />
           </Route>
         </Route>
       </Route>

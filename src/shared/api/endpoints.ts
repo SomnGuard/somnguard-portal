@@ -51,6 +51,25 @@ export const endpoints = {
     health: deriveHealthUrl(urlBase),
     ws: deriveWsUrl(),
   },
+  notifications: {
+    list: (page = 1, pageSize = 20) => `${urlBase}/notifications?page=${page}&page_size=${pageSize}`,
+    unreadCount: `${urlBase}/notifications/unread-count`,
+    delivered: (id: string) => `${urlBase}/notifications/${id}/delivered`,
+    read: (id: string) => `${urlBase}/notifications/${id}/read`,
+    deviceTokens: `${urlBase}/notifications/device-tokens`,
+    preferences: `${urlBase}/users/me/notification-preferences`,
+  },
+  events: {
+    list: (params: { severity?: string; from?: string; to?: string; page?: number; pageSize?: number }) => {
+      const q = new URLSearchParams();
+      if (params.severity) q.set('severity', params.severity);
+      if (params.from) q.set('from', params.from);
+      if (params.to) q.set('to', params.to);
+      q.set('page', String(params.page ?? 1));
+      q.set('page_size', String(params.pageSize ?? 20));
+      return `${urlBase}/events?${q.toString()}`;
+    },
+  },
 } as const;
 
 export const HTTP = {

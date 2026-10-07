@@ -21,8 +21,10 @@ export const paths = {
   user: {
     root: '/user',
     dashboard: '/user/dashboard',
-    device: '/user/my-device',
+    device: '/user/monitoreo',
     alerts: '/user/my-alerts',
+    events: '/user/my-events',
+    preferences: '/user/preferences',
   },
   forbidden: '/403',
 } as const;

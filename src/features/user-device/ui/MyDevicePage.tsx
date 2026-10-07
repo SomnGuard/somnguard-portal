@@ -1,10 +1,15 @@
-import { DeviceLivePanel } from '../../streaming/ui/DeviceLivePanel';
+import { AutoLiveBox } from '../../streaming/ui/AutoLiveBox';
 
 export function MyDevicePage() {
   return (
-    <section className="module-page">
-      <div className="page-heading compact"><span className="eyebrow">USER / MY DEVICE</span><h1>Mi dispositivo</h1><p>Vista específica del usuario final.</p></div>
-      <DeviceLivePanel title="SomnGuard Device en vivo" />
+    <section className="module-page user-page">
+      <header className="page-header user-page-header">
+        <div>
+          <h1>Monitoreo</h1>
+          <p>Estado del sistema y vista en vivo de tu dispositivo.</p>
+        </div>
+      </header>
+      <AutoLiveBox />
     </section>
   );
 }

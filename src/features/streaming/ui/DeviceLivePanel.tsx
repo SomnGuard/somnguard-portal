@@ -53,7 +53,7 @@ export function DeviceLivePanel({ title }: { title: string }) {
   };
 
   return (
-    <div className="simple-panel">
+    <div className="simple-panel user-device-card">
       <h2>{title}</h2>
       <div className="row">
         <label htmlFor="liveDeviceId">Device ID: </label>
