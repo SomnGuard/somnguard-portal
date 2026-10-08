@@ -16,6 +16,14 @@ import { SecurityPage } from '../../features/security/ui/SecurityPage';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { useAuth } from '../../features/auth/model/AuthContext';
 import { getHomeRoute } from './paths';
+import { DeviceManagementPage } from '../../features/device-management/ui/DeviceManagementPage';
+import { DeviceListPage } from '../../features/device-management/ui/DeviceListPage';
+import { DeviceConfigPage } from '../../features/device-management/ui/DeviceConfigPage';
+import { RequirePermission } from './guards/RequirePermission';
+import { RolesPage } from '../../features/security/ui/RolesPage';
+import { CatalogsPage } from '../../features/security/ui/CatalogsPage';
+import { AdminEventsPage } from '../../features/user-events/ui/AdminEventsPage';
+import { AdminNotificationsPage } from '../../features/notifications/ui/AdminNotificationsPage';
 
 function HomeRoute() {
   const { user, isInitializing } = useAuth();
@@ -42,7 +50,26 @@ export function AppRouter() {
           <Route path={paths.admin.root} element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="security" element={<SecurityPage />} />
+            <Route path="security" element={<SecurityPage />}>
+              <Route index element={<Navigate to="roles" replace />} />
+              <Route element={<RequirePermission permission="ROLE_READ" />}>
+                <Route path="roles" element={<RolesPage />} />
+              </Route>
+              <Route path="catalogs" element={<CatalogsPage />} />
+            </Route>
+            <Route element={<RequirePermission permission="ALERT_READ" />}>
+              <Route path="events" element={<AdminEventsPage />} />
+              <Route path="notifications" element={<AdminNotificationsPage />} />
+            </Route>
+            <Route element={<RequirePermission permission="DEVICE_READ" />}>
+              <Route path="device-management" element={<DeviceManagementPage />}>
+                <Route index element={<Navigate to="devices" replace />} />
+                <Route path="devices" element={<DeviceListPage />} />
+                <Route element={<RequirePermission permission="DEVICE_CONFIG" />}>
+                  <Route path="configuration" element={<DeviceConfigPage />} />
+                </Route>
+              </Route>
+            </Route>
           </Route>
         </Route>
 

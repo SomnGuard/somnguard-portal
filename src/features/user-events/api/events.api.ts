@@ -6,6 +6,7 @@
 import { httpRequest } from '../../../shared/api/client';
 import { endpoints, HTTP } from '../../../shared/api/endpoints';
 import { getAccessToken } from '../../../shared/api/secureStorage';
+import { parseApiError, logApiError } from '../../../shared/api/errors';
 
 export interface DeviceEvent {
   id: string;
@@ -79,4 +80,20 @@ export async function listEventsApi(filters: EventFilters): Promise<EventPage> {
       totalPages: Number(p['total_pages'] ?? p['totalPages'] ?? 0),
     },
   };
+}
+
+export async function getEventEvidenceApi(eventId: string): Promise<{ blob: Blob; contentType: string }> {
+  const response = await fetch(endpoints.events.evidence(eventId), {
+    method: 'GET',
+    headers: { Accept: '*/*', ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}) },
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const error = parseApiError(response.status, body);
+    logApiError(`getEventEvidence ${eventId} -> ${response.status}`, error);
+    throw error;
+  }
+  const blob = await response.blob();
+  return { blob, contentType: response.headers.get('content-type') || blob.type || 'application/octet-stream' };
 }

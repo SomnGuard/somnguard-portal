@@ -68,6 +68,10 @@ export function securityGroup(children: ShellSubItem[]): ShellGroup {
   return { id: 'security', title: 'Seguridad', icon: <SecurityIcon />, children };
 }
 
+export function adminDevicesGroup(children: ShellSubItem[]): ShellGroup {
+  return { id: 'devices', title: 'Dispositivos', icon: <DeviceIcon />, children };
+}
+
 function DeviceIcon() {
   return (
     <svg viewBox="0 0 24 24">
@@ -108,6 +112,10 @@ export function preferencesGroup(to: string): ShellGroup {
 
 export function alertsGroup(children: ShellSubItem[]): ShellGroup {
   return eventsGroup(children);
+}
+
+export function notificationsGroup(children: ShellSubItem[]): ShellGroup {
+  return { id: 'notifications', title: 'Notificaciones', icon: <BellIcon />, children };
 }
 
 function initials(name: string | undefined, email: string | undefined): string {
