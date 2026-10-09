@@ -113,6 +113,12 @@ export async function httpRequest<T>(url: string, method: string, data: unknown 
   if (response.status === 204) {
     return null as T;
   }
-
-  return (await response.json()) as T;
+  const responseText = await response.text();
+  if (!responseText.trim()) return null as T;
+  try {
+    return JSON.parse(responseText) as T;
+  } catch {
+    // Algunas operaciones exitosas devuelven texto plano o un cuerpo vacío.
+    return responseText as T;
+  }
 }

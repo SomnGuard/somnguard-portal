@@ -58,6 +58,7 @@ export const endpoints = {
     read: (id: string) => `${urlBase}/notifications/${id}/read`,
     deviceTokens: `${urlBase}/notifications/device-tokens`,
     preferences: `${urlBase}/users/me/notification-preferences`,
+    retry: `${urlBase}/notifications/retry`,
   },
   events: {
     list: (params: { severity?: string; from?: string; to?: string; page?: number; pageSize?: number }) => {
@@ -69,6 +70,45 @@ export const endpoints = {
       q.set('page_size', String(params.pageSize ?? 20));
       return `${urlBase}/events?${q.toString()}`;
     },
+    evidence: (eventId: string) => `${urlBase}/events/${encodeURIComponent(eventId)}/evidence`,
+  },
+  devices: {
+    list: (params: { status?: string; assignedFrom?: string; assignedTo?: string; page?: number; pageSize?: number }) => {
+      const q = new URLSearchParams();
+      if (params.status) q.set('status', params.status);
+      if (params.assignedFrom) q.set('assigned_from', params.assignedFrom);
+      if (params.assignedTo) q.set('assigned_to', params.assignedTo);
+      q.set('page', String(params.page ?? 1));
+      q.set('page_size', String(params.pageSize ?? 20));
+      return `${urlBase}/devices?${q.toString()}`;
+    },
+    create: `${urlBase}/devices`,
+    detail: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}`,
+    update: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}`,
+    assign: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/assign`,
+    unassign: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/unassign`,
+    claim: `${urlBase}/devices/claim`,
+    rotateKey: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/rotate-key`,
+    provisioningTokens: `${urlBase}/devices/provisioning-tokens`,
+    config: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/config`,
+    configStatus: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/config/status`,
+    configRefresh: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/config/refresh`,
+  },
+  admin: {
+    roles: `${urlBase}/roles`,
+    role: (id: string) => `${urlBase}/roles/${encodeURIComponent(id)}`,
+    features: `${urlBase}/features`,
+    feature: (id: string) => `${urlBase}/features/${encodeURIComponent(id)}`,
+    modules: `${urlBase}/modules`,
+    moduleFeatures: (id: string) => `${urlBase}/modules/${encodeURIComponent(id)}/features`,
+    roleFeatures: `${urlBase}/role-features`,
+    roleFeature: (id: string) => `${urlBase}/role-features/${encodeURIComponent(id)}`,
+    userRoles: (id: string) => `${urlBase}/users/${encodeURIComponent(id)}/roles`,
+    userRole: (userId: string, roleId: string) => `${urlBase}/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(roleId)}`,
+  },
+  catalogs: {
+    list: (catalog: string) => `${urlBase}/catalogs/${catalog}`,
+    item: (catalog: string, id: string) => `${urlBase}/catalogs/${catalog}/${encodeURIComponent(id)}`,
   },
 } as const;
 
@@ -77,6 +117,7 @@ export const HTTP = {
   POST: 'POST',
   PUT: 'PUT',
   DELETE: 'DELETE',
+  PATCH: 'PATCH',
 } as const;
 
 export type HttpMethod = (typeof HTTP)[keyof typeof HTTP];

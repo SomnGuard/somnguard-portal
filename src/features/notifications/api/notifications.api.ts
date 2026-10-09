@@ -94,6 +94,10 @@ export async function getUnreadCountApi(): Promise<number> {
   }
 }
 
+export async function retryPendingNotificationsApi(): Promise<Record<string, number>> {
+  return httpRequest<Record<string, number>>(endpoints.notifications.retry, HTTP.POST);
+}
+
 export async function markNotificationReadApi(id: string): Promise<NotificationItem> {
   const raw = await httpRequest<Record<string, unknown>>(endpoints.notifications.read(id), HTTP.POST, {});
   return toItem(raw);
