@@ -72,6 +72,37 @@ export const endpoints = {
     },
     evidence: (eventId: string) => `${urlBase}/events/${encodeURIComponent(eventId)}/evidence`,
   },
+  analytics: {
+    timeline: (params: { deviceId?: string; eventTypeId?: string; severity?: string; from?: string; to?: string; page?: number; pageSize?: number }) => {
+      const q = new URLSearchParams();
+      if (params.deviceId) q.set('device_id', params.deviceId);
+      if (params.eventTypeId) q.set('event_type_id', params.eventTypeId);
+      if (params.severity) q.set('severity', params.severity);
+      if (params.from) q.set('from', params.from);
+      if (params.to) q.set('to', params.to);
+      q.set('page', String(params.page ?? 1));
+      q.set('page_size', String(params.pageSize ?? 20));
+      return `${urlBase}/analytics/timeline?${q.toString()}`;
+    },
+    metrics: (params: { from?: string; to?: string }) => {
+      const q = new URLSearchParams();
+      if (params.from) q.set('from', params.from);
+      if (params.to) q.set('to', params.to);
+      return `${urlBase}/analytics/metrics${q.size ? `?${q.toString()}` : ''}`;
+    },
+    summary: (params: { from?: string; to?: string }) => {
+      const q = new URLSearchParams();
+      if (params.from) q.set('from', params.from);
+      if (params.to) q.set('to', params.to);
+      return `${urlBase}/analytics/summary${q.size ? `?${q.toString()}` : ''}`;
+    },
+    report: (params: { from?: string; to?: string }) => {
+      const q = new URLSearchParams();
+      if (params.from) q.set('from', params.from);
+      if (params.to) q.set('to', params.to);
+      return `${urlBase}/analytics/reports${q.size ? `?${q.toString()}` : ''}`;
+    },
+  },
   devices: {
     list: (params: { status?: string; assignedFrom?: string; assignedTo?: string; page?: number; pageSize?: number }) => {
       const q = new URLSearchParams();

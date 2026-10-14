@@ -24,6 +24,7 @@ import { RolesPage } from '../../features/security/ui/RolesPage';
 import { CatalogsPage } from '../../features/security/ui/CatalogsPage';
 import { AdminEventsPage } from '../../features/user-events/ui/AdminEventsPage';
 import { AdminNotificationsPage } from '../../features/notifications/ui/AdminNotificationsPage';
+import { AnalyticsPage } from '../../features/analytics/ui/AnalyticsPage';
 
 function HomeRoute() {
   const { user, isInitializing } = useAuth();
@@ -50,6 +51,9 @@ export function AppRouter() {
           <Route path={paths.admin.root} element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route element={<RequirePermission permission="ANALYTICS_READ" />}>
+              <Route path="analytics" element={<AnalyticsPage />} />
+            </Route>
             <Route path="security" element={<SecurityPage />}>
               <Route index element={<Navigate to="roles" replace />} />
               <Route element={<RequirePermission permission="ROLE_READ" />}>
@@ -81,6 +85,9 @@ export function AppRouter() {
             <Route path="my-alerts" element={<MyAlertsPage />} />
             <Route path="my-events" element={<MyEventsPage />} />
             <Route path="preferences" element={<NotificationPreferencesPage />} />
+            <Route element={<RequirePermission permission="ANALYTICS_READ" />}>
+              <Route path="analytics" element={<AnalyticsPage />} />
+            </Route>
           </Route>
         </Route>
       </Route>

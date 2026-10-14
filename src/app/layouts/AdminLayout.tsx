@@ -1,4 +1,4 @@
-import { ShellLayout, adminDevicesGroup, dashboardGroup, eventsGroup, notificationsGroup, securityGroup } from './ShellLayout';
+import { ShellLayout, adminDevicesGroup, analyticsGroup, dashboardGroup, eventsGroup, notificationsGroup, securityGroup } from './ShellLayout';
 import { paths } from '../router/paths';
 
 export function AdminLayout() {
@@ -6,6 +6,7 @@ export function AdminLayout() {
     <ShellLayout
       menu={[
         dashboardGroup(paths.admin.dashboard),
+        analyticsGroup(paths.admin.analytics),
         adminDevicesGroup([
           { to: paths.admin.deviceList, label: 'Inventario' },
           { to: paths.admin.deviceConfig, label: 'Configuración' },
