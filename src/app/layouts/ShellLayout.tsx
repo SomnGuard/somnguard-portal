@@ -89,6 +89,10 @@ function EventsIcon() {
   );
 }
 
+function AnalyticsIcon() {
+  return <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 5-6"/><circle cx="7" cy="15" r="1"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="13" r="1"/><circle cx="19" cy="7" r="1"/></svg>;
+}
+
 function PreferencesIcon() {
   return (
     <svg viewBox="0 0 24 24">
@@ -104,6 +108,10 @@ export function deviceGroup(to: string): ShellGroup {
 
 export function eventsGroup(children: ShellSubItem[]): ShellGroup {
   return { id: 'events', title: 'Eventos', icon: <EventsIcon />, children };
+}
+
+export function analyticsGroup(to: string): ShellGroup {
+  return { id: 'analytics', title: 'Analítica', to, icon: <AnalyticsIcon /> };
 }
 
 export function preferencesGroup(to: string): ShellGroup {

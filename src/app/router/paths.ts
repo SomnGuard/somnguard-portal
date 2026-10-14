@@ -17,6 +17,7 @@ export const paths = {
     catalogs: '/admin/security/catalogs',
     events: '/admin/events',
     notifications: '/admin/notifications',
+    analytics: '/admin/analytics',
     devices: '/admin/device-management',
     deviceList: '/admin/device-management/devices',
     deviceConfig: '/admin/device-management/configuration',
@@ -28,6 +29,7 @@ export const paths = {
     alerts: '/user/my-alerts',
     events: '/user/my-events',
     preferences: '/user/preferences',
+    analytics: '/user/analytics',
   },
   forbidden: '/403',
 } as const;

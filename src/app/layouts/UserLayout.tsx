@@ -1,4 +1,4 @@
-import { ShellLayout, dashboardGroup, eventsGroup, preferencesGroup, deviceGroup } from './ShellLayout';
+import { ShellLayout, analyticsGroup, dashboardGroup, eventsGroup, preferencesGroup, deviceGroup } from './ShellLayout';
 import { paths } from '../router/paths';
 
 export function UserLayout() {
@@ -6,6 +6,7 @@ export function UserLayout() {
     <ShellLayout
       menu={[
         dashboardGroup(paths.user.dashboard),
+        analyticsGroup(paths.user.analytics),
         deviceGroup(paths.user.device),
         eventsGroup([
           { to: paths.user.events, label: 'Historial' },
