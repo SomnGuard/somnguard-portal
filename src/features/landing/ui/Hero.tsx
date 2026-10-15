@@ -15,7 +15,7 @@ export function Hero() {
           <div className="download-buttons">
             <a
               className="btn-download"
-              href="https://expo.dev/accounts/somnguard-team/projects/SomnGuard/builds/182b1b7d-4af0-4e87-bf3c-a1ad32ee9be8"
+              href="https://download.somnguard.tech/SomnGuard.apk"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Descargar SomnGuard para Android desde Expo"
