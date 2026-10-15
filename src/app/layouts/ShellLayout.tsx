@@ -102,6 +102,25 @@ function PreferencesIcon() {
   );
 }
 
+function AccountIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3.6"></circle>
+      <path d="M4.5 19.5c1.4-3.2 4.2-4.8 7.5-4.8s6.1 1.6 7.5 4.8"></path>
+    </svg>
+  );
+}
+
+function HelpIcon() {
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5"></circle>
+      <path d="M9.5 9.5c.3-1.4 1.4-2.3 2.7-2.3 1.5 0 2.7 1 2.7 2.4 0 1.9-2.4 2-2.4 3.6"></path>
+      <circle cx="12" cy="16.8" r=".4"></circle>
+    </svg>
+  );
+}
+
 export function deviceGroup(to: string): ShellGroup {
   return { id: 'device', title: 'Monitoreo', to, icon: <DeviceIcon /> };
 }
@@ -116,6 +135,22 @@ export function analyticsGroup(to: string): ShellGroup {
 
 export function preferencesGroup(to: string): ShellGroup {
   return { id: 'preferences', title: 'Preferencias', to, icon: <PreferencesIcon /> };
+}
+
+export function settingsGroup(children: ShellSubItem[]): ShellGroup {
+  return { id: 'settings', title: 'Cuenta y ajustes', icon: <PreferencesIcon />, children };
+}
+
+export function accountGroup(to: string): ShellGroup {
+  return { id: 'account', title: 'Mi cuenta', to, icon: <AccountIcon /> };
+}
+
+export function userSecurityGroup(to: string): ShellGroup {
+  return { id: 'user-security', title: 'Seguridad', to, icon: <SecurityIcon /> };
+}
+
+export function helpGroup(to: string): ShellGroup {
+  return { id: 'help', title: 'Ayuda', to, icon: <HelpIcon /> };
 }
 
 export function alertsGroup(children: ShellSubItem[]): ShellGroup {
@@ -333,10 +368,10 @@ export function ShellLayout({ menu }: { menu: ShellGroup[] }) {
           <button className="brand" onClick={() => user && navigate(getHomeRoute(user))} aria-label="Ir al inicio">
             <span className="brand-mark" aria-hidden="true">
               <svg viewBox="0 0 100 112" fill="none" style={{ width: 40, height: 45 }}>
-                <path d="M50 5 L88 19 L88 55 C88 79 70 97 50 107 C30 97 12 79 12 55 L12 19 Z" fill="#0c1b2e" stroke="#00C8C8" strokeWidth="5.5" strokeLinejoin="round"></path>
-                <rect x="26" y="38" width="48" height="24" rx="12" ry="12" fill="#0c1b2e" stroke="#00C8C8" strokeWidth="4"></rect>
-                <circle cx="50" cy="50" r="9" fill="#00C8C8" stroke="none"></circle>
-                <path d="M41 73 Q50 78 59 73" stroke="#00C8C8" strokeWidth="3.5" strokeLinecap="round" fill="none"></path>
+                <path className="sg-logo-shield" d="M50 5 L88 19 L88 55 C88 79 70 97 50 107 C30 97 12 79 12 55 L12 19 Z" strokeWidth="5.5" strokeLinejoin="round"></path>
+                <rect className="sg-logo-eye" x="26" y="38" width="48" height="24" rx="12" ry="12" strokeWidth="4"></rect>
+                <circle className="sg-logo-pupil" cx="50" cy="50" r="9" stroke="none"></circle>
+                <path className="sg-logo-smile" d="M41 73 Q50 78 59 73" strokeWidth="3.5" strokeLinecap="round"></path>
               </svg>
             </span>
             <span className="brand-copy">
@@ -482,9 +517,19 @@ export function ShellLayout({ menu }: { menu: ShellGroup[] }) {
         </div>
         <footer className="app-foot">
           <span>© 2026 SomnGuard</span>
-          <a href="#" onClick={(e) => e.preventDefault()}>Privacidad</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>Términos</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>Contacto</a>
+          {isUserShell ? (
+            <>
+              <button type="button" className="app-foot-link" onClick={() => navigate(paths.user.help)}>Ayuda</button>
+              <button type="button" className="app-foot-link" onClick={() => navigate(paths.public.privacy)}>Privacidad</button>
+              <button type="button" className="app-foot-link" onClick={() => navigate(paths.public.terms)}>Términos</button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="app-foot-link" onClick={() => navigate(paths.public.privacy)}>Privacidad</button>
+              <button type="button" className="app-foot-link" onClick={() => navigate(paths.public.terms)}>Términos</button>
+              <a href="mailto:soporte@somnguard.tech">Contacto</a>
+            </>
+          )}
         </footer>
       </main>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { listNotificationsApi, markNotificationReadApi, type NotificationItem } from '../../notifications/api/notifications.api';
+import { useLang } from '../../../shared/i18n/LanguageContext';
 
 function channelLabel(channel: string): string {
   if (channel === 'in_app') return 'En la aplicación';
@@ -35,6 +36,7 @@ function NotificationIcon() {
 }
 
 export function MyAlertsPage() {
+  const { t } = useLang();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -74,8 +76,8 @@ export function MyAlertsPage() {
     <section className="module-page user-page">
       <header className="page-header user-page-header">
         <div>
-          <h1>Notificaciones</h1>
-          <p>Consulta los avisos generados por SomnGuard y revisa cuáles aún necesitan tu atención.</p>
+          <h1>{t('al.title')}</h1>
+          <p>{t('al.subtitle')}</p>
         </div>
       </header>
 
@@ -86,37 +88,37 @@ export function MyAlertsPage() {
           <span className="summary-icon"><NotificationIcon /></span>
           <div>
             <strong>{total}</strong>
-            <span>notificaciones registradas</span>
+            <span>{t('al.total')}</span>
           </div>
         </div>
         <div className="summary-stat">
-          <span className="summary-stat-label">Sin leer</span>
+          <span className="summary-stat-label">{t('al.unread')}</span>
           <strong className={unread > 0 ? 'summary-alert' : ''}>{unread}</strong>
         </div>
         <div className="summary-stat">
-          <span className="summary-stat-label">Estado</span>
-          <strong>{unread > 0 ? 'Requiere revisión' : 'Al día'}</strong>
+          <span className="summary-stat-label">{t('al.status')}</span>
+          <strong>{unread > 0 ? t('al.needsReview') : t('al.upToDate')}</strong>
         </div>
       </section>
 
       <section className="notifications-panel">
         <div className="notifications-panel-head">
           <div>
-            <h2>Historial de notificaciones</h2>
-            <p>Los avisos más recientes aparecen primero.</p>
+            <h2>{t('al.history')}</h2>
+            <p>{t('al.recentFirst')}</p>
           </div>
-          <span className="notifications-total-pill">{items.length} visibles</span>
+          <span className="notifications-total-pill">{items.length} {t('al.visible')}</span>
         </div>
 
         {loading ? (
-          <div className="notifications-loading">Cargando notificaciones…</div>
+          <div className="notifications-loading">{t('al.loading')}</div>
         ) : null}
 
         {!loading && items.length === 0 ? (
           <div className="notifications-empty-state">
             <span className="notifications-empty-icon"><NotificationIcon /></span>
-            <h3>No hay notificaciones</h3>
-            <p>Cuando SomnGuard genere un aviso para tu cuenta, aparecerá aquí.</p>
+            <h3>{t('al.empty')}</h3>
+            <p>{t('al.emptyHint')}</p>
           </div>
         ) : null}
 
@@ -127,8 +129,8 @@ export function MyAlertsPage() {
                 <div className="notification-card-icon"><NotificationIcon /></div>
                 <div className="notification-card-content">
                   <div className="notification-card-title">
-                    <h3>{n.title || '(sin título)'}</h3>
-                    {!n.readAt ? <span className="new-badge">Nueva</span> : <span className="read-badge">Leída</span>}
+                    <h3>{n.title || t('al.noTitle')}</h3>
+                    {!n.readAt ? <span className="new-badge">{t('al.new')}</span> : <span className="read-badge">{t('al.read')}</span>}
                   </div>
                   <p>{n.message}</p>
                   <div className="notification-card-meta">
@@ -140,7 +142,7 @@ export function MyAlertsPage() {
                   </div>
                 </div>
                 {!n.readAt ? (
-                  <button className="notification-read-btn" onClick={() => void handleRead(n.id)}>Marcar como leída</button>
+                  <button className="notification-read-btn" onClick={() => void handleRead(n.id)}>{t('al.markRead')}</button>
                 ) : null}
               </article>
             ))}

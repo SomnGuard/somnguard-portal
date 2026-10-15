@@ -1139,3 +1139,288 @@ body.sg-collapsed .app-shell .nav-group.active > .nav-group-toggle::before { lef
 .admin-feature-checkbox > span { display: grid; gap: 3px; }
 .admin-feature-checkbox strong { color: var(--text); font-size: 10px; }
 .admin-feature-checkbox small { color: var(--text-faint); font-size: 9px; line-height: 1.4; }
+
+/* ---------- Monitoreo estilo app + Mi cuenta ---------- */
+.user-shell .user-auto-live-card { padding: 18px; border: 1px solid rgba(151,196,211,.11); border-radius: 15px; }
+.user-shell .live-head { display: flex; align-items: center; gap: 8px; min-height: 30px; margin-bottom: 12px; }
+.user-shell .live-head strong { flex: 1; color: #18c7c8; font-size: 13px; font-weight: 800; letter-spacing: .02em; }
+.user-shell .live-hint { color: #748e9d; font-size: 10.5px; font-weight: 700; }
+.user-shell .live-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.user-shell .live-box { position: relative; width: 100%; max-width: 640px; margin: 0 auto; aspect-ratio: 4 / 3; max-height: 420px; background: #03070d; border-radius: 12px; overflow: hidden; }
+.user-shell .live-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; padding: 20px; text-align: center; background: radial-gradient(ellipse at center, #111827 0%, #000 70%); }
+.user-shell .live-overlay .state-icon { color: #5b7686; font-size: 28px; }
+.user-shell .live-badge { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 7px; padding: 6px 10px; border-radius: 20px; background: rgba(3,7,13,.78); color: #f5fbff; font-size: 10px; font-weight: 800; letter-spacing: .05em; }
+.user-shell .live-badge-dot { width: 7px; height: 7px; border-radius: 50%; }
+.user-shell .live-controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.user-shell .live-controls .live-primary { border-color: rgba(24,199,200,.30); background: rgba(24,199,200,.10); }
+.user-shell .live-note { margin-top: 8px; color: #748e9d; font-size: 11px; line-height: 1.5; }
+.user-shell .account-layout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.user-shell .account-card { min-width: 0; padding: 17px; border: 1px solid rgba(151,196,211,.11); border-radius: 14px; background: #0d1b2d; }
+.user-shell .account-card h2 { color: #ecf4f6; font-size: 14px; margin-bottom: 10px; }
+.user-shell .account-card .muted { color: #748e9d; font-size: 11px; line-height: 1.55; }
+.user-shell .account-list { display: grid; }
+.user-shell .account-list > div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid rgba(151,196,211,.07); }
+.user-shell .account-list > div:first-child { border-top: 0; }
+.user-shell .account-list dt { color: #728b99; font-size: 10.5px; }
+.user-shell .account-list dd { margin: 0; color: #cddde3; font-size: 11px; font-weight: 650; text-align: right; overflow-wrap: anywhere; }
+.user-shell .account-outline { margin-top: 12px; min-height: 38px; padding: 8px 13px; border: 1px solid rgba(151,196,211,.16); border-radius: 9px; background: transparent; color: #d8e7ec; font: inherit; font-size: 11.5px; font-weight: 650; cursor: pointer; }
+.user-shell .account-outline:hover { border-color: rgba(24,199,200,.28); color: #effafa; }
+.user-shell .account-layout-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.user-shell .account-danger { border-color: rgba(255,85,85,.35); }
+.user-shell .account-danger h2 { color: #ff858d; }
+.user-shell .account-danger-btn { margin-top: 12px; min-height: 40px; padding: 9px 14px; border-radius: 10px; border: 1px solid rgba(255,85,85,.45); background: rgba(255,85,85,.10); color: #ffbcc4; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.user-shell .account-danger-btn:hover:not(:disabled) { background: rgba(255,85,85,.18); }
+.user-shell .account-danger-btn:disabled { opacity: .55; cursor: not-allowed; }
+.user-shell .account-confirm { margin-top: 12px; display: grid; gap: 10px; }
+.user-shell .account-confirm-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.user-shell .account-links { display: flex; gap: 14px; margin-top: 12px; }
+.user-shell .account-links a { color: #68d4d4; font-size: 11.5px; font-weight: 700; }
+.user-shell .account-links a:hover { text-decoration: underline; }
+:root[data-theme='light'] .user-shell .account-links a { color: #00787f; }
+.user-shell .app-foot-link { border: 0; background: transparent; padding: 0; color: inherit; font: inherit; cursor: pointer; }
+.user-shell .app-foot-link:hover { text-decoration: underline; }
+.user-shell .ev-media { position: relative; margin-top: 12px; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #07111c; border: 1px solid rgba(151,196,211,.12); display: grid; place-items: center; }
+.user-shell .ev-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.user-shell .ev-media-tag { position: absolute; top: 10px; right: 10px; padding: 3px 10px; border-radius: 10px; color: #fff; font-size: 10px; font-weight: 800; }
+.user-shell .ev-media-stamp { position: absolute; left: 12px; bottom: 10px; color: #fff; font-size: 11px; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.user-shell .ev-media-state { padding: 16px; text-align: center; color: #7d97a5; font-size: 11.5px; display: grid; gap: 10px; justify-items: center; }
+@media (max-width: 960px) { .user-shell .account-layout { grid-template-columns: 1fr; } }
+
+/* ---------- Timeline de eventos estilo app ---------- */
+.user-shell .ev-timeline-list { display: grid; gap: 6px; }
+.user-shell .ev-day { margin-top: 8px; }
+.user-shell .ev-day-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 10px 2px; }
+.user-shell .ev-day-head h3 { color: #eef5f7; font-size: 13px; font-weight: 800; }
+.user-shell .ev-day-head span { color: #778f9d; font-size: 11px; }
+.user-shell .ev-timeline { position: relative; display: grid; gap: 10px; padding-left: 22px; }
+.user-shell .ev-timeline-line { position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px; background: rgba(151,196,211,.18); }
+.user-shell .ev-card { position: relative; padding: 12px; border-radius: 14px; background: #0d1b2d; border: 1px solid rgba(151,196,211,.11); border-left-width: 3px; }
+.user-shell .ev-card.sev-info { border-left-color: #22d3ee; }
+.user-shell .ev-card.sev-warning { border-left-color: #fbbf24; }
+.user-shell .ev-card.sev-high { border-left-color: #fb923c; }
+.user-shell .ev-card.sev-critical { border-left-color: #ef4444; }
+.user-shell .ev-card-dot { position: absolute; left: -22px; top: 30px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #0a1626; background: #8ba4b2; }
+.user-shell .ev-card.sev-info .ev-card-dot { background: #22d3ee; }
+.user-shell .ev-card.sev-warning .ev-card-dot { background: #fbbf24; }
+.user-shell .ev-card.sev-high .ev-card-dot { background: #fb923c; }
+.user-shell .ev-card.sev-critical .ev-card-dot { background: #ef4444; }
+.user-shell .ev-card-top { display: flex; align-items: center; gap: 12px; }
+.user-shell .ev-card-body { flex: 1; min-width: 0; }
+.user-shell .ev-card-body h4 { color: #e7f0f3; font-size: 13.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-shell .ev-card-body .sev-badge { margin-top: 4px; display: inline-block; }
+.user-shell .ev-card-time { flex: none; text-align: right; }
+.user-shell .ev-card-time strong { display: block; color: #eef5f7; font-size: 19px; font-variant-numeric: tabular-nums; }
+.user-shell .ev-card-time span { display: block; color: #778f9d; font-size: 10.5px; margin-top: 2px; }
+.user-shell .ev-card-sub { margin-top: 6px; color: #869eac; font-size: 11px; }
+.user-shell .ev-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(151,196,211,.08); }
+.user-shell .ev-flag { display: inline-flex; align-items: center; gap: 7px; color: #778f9d; font-size: 11px; font-weight: 700; }
+.user-shell .ev-flag i { width: 8px; height: 8px; border-radius: 50%; background: #5b7686; }
+.user-shell .ev-flag.yes { color: #82e4e4; }
+.user-shell .ev-flag.yes i { background: #18c7c8; }
+.user-shell .ev-btn { min-height: 38px; padding: 8px 18px; border-radius: 10px; border: 1px solid rgba(24,199,200,.30); background: rgba(24,199,200,.12); color: #eafafa; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.user-shell .ev-btn:hover { background: rgba(24,199,200,.20); }
+
+/* ========== Tema claro: variables del shell + superficies y textos del módulo usuario ========== */
+:root[data-theme='light'] .app-shell {
+  --bg-primary: #edf3f5;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f4f9fb;
+  --bg-input: #f1f6f8;
+  --border: rgba(4, 90, 100, 0.20);
+  --border-soft: rgba(4, 90, 100, 0.13);
+  --accent: #00838d;
+  --accent-hover: #00a3ae;
+  --accent-light: rgba(0, 131, 141, 0.09);
+  --accent-ink: #e6f7f8;
+  --text: #0f2632;
+  --text-muted: #40616f;
+  --text-faint: #5d7f8d;
+  background:
+    radial-gradient(900px 400px at 80% -10%, rgba(0, 131, 141, 0.06), transparent 60%),
+    radial-gradient(700px 380px at 10% 0%, rgba(108, 144, 240, 0.05), transparent 60%),
+    var(--bg-primary);
+  color: var(--text);
+}
+:root[data-theme='light'] .app-shell .topbar { background: rgba(255,255,255,.96); }
+:root[data-theme='light'] .app-shell .sidebar { background: #f7fbfc; }
+:root[data-theme='light'] .app-shell .nav-group-toggle:hover,
+:root[data-theme='light'] .app-shell .nav-link:hover { background: rgba(0,131,141,.06); }
+:root[data-theme='light'] .user-shell .account-card,
+:root[data-theme='light'] .user-shell .user-auto-live-card,
+:root[data-theme='light'] .user-shell .user-live-card,
+:root[data-theme='light'] .user-shell .user-device-card,
+:root[data-theme='light'] .user-shell .ev-card,
+:root[data-theme='light'] .user-shell .preferences-card,
+:root[data-theme='light'] .user-shell .ev-filters,
+:root[data-theme='light'] .user-shell .ev-stat,
+:root[data-theme='light'] .user-shell .notifications-panel,
+:root[data-theme='light'] .user-shell .summary-primary,
+:root[data-theme='light'] .user-shell .summary-stat,
+:root[data-theme='light'] .user-shell .ev-drawer,
+:root[data-theme='light'] .user-shell .notification-card,
+:root[data-theme='light'] .user-shell .notifications-empty-state,
+:root[data-theme='light'] .user-shell .preferences-loading {
+  background: #ffffff;
+  border-color: rgba(4, 90, 100, 0.16);
+}
+:root[data-theme='light'] .user-shell .account-card h2,
+:root[data-theme='light'] .user-shell .ev-day-head h3,
+:root[data-theme='light'] .user-shell .ev-card-body h4,
+:root[data-theme='light'] .user-shell .ev-card-time strong,
+:root[data-theme='light'] .user-shell .preferences-card h2,
+:root[data-theme='light'] .user-shell .user-page-header h1,
+:root[data-theme='light'] .user-shell .ev-list-head h2,
+:root[data-theme='light'] .user-shell .ev-drawer h2,
+:root[data-theme='light'] .user-shell .summary-primary strong,
+:root[data-theme='light'] .user-shell .ev-stat strong,
+:root[data-theme='light'] .user-shell .notifications-panel-head h2,
+:root[data-theme='light'] .user-shell .notification-card-title h3,
+:root[data-theme='light'] .user-shell .user-home h1,
+:root[data-theme='light'] .user-shell .live-head strong,
+:root[data-theme='light'] .user-shell .notifications-empty-state h3 {
+  color: #0f2632;
+}
+:root[data-theme='light'] .user-shell .account-list dd,
+:root[data-theme='light'] .user-shell .preferences-list dd,
+:root[data-theme='light'] .user-shell .ev-card-sub,
+:root[data-theme='light'] .user-shell .ev-card-time span,
+:root[data-theme='light'] .user-shell .ev-day-head span,
+:root[data-theme='light'] .user-shell .account-card .muted,
+:root[data-theme='light'] .user-shell .preferences-card p,
+:root[data-theme='light'] .user-shell .preference-toggle-row strong,
+:root[data-theme='light'] .user-shell .preference-toggle-row div > span,
+:root[data-theme='light'] .user-shell .notification-card-content > p,
+:root[data-theme='light'] .user-shell .notification-card-meta,
+:root[data-theme='light'] .user-shell .summary-primary span:last-child,
+:root[data-theme='light'] .user-shell .live-note,
+:root[data-theme='light'] .user-shell .live-hint,
+:root[data-theme='light'] .user-shell .user-auto-live-card .muted,
+:root[data-theme='light'] .user-shell .ev-media-state,
+:root[data-theme='light'] .user-shell .ev-drawer-code,
+:root[data-theme='light'] .user-shell .ev-detail dd,
+:root[data-theme='light'] .user-shell .user-page-header p,
+:root[data-theme='light'] .user-shell .ev-flag,
+:root[data-theme='light'] .user-shell .notifications-panel-head p,
+:root[data-theme='light'] .user-shell .ev-list-head span,
+:root[data-theme='light'] .user-shell .notifications-empty-state p,
+:root[data-theme='light'] .user-shell .user-home > p {
+  color: #41606f;
+}
+:root[data-theme='light'] .user-shell .account-list dt,
+:root[data-theme='light'] .user-shell .preferences-list dt,
+:root[data-theme='light'] .user-shell .ev-detail dt,
+:root[data-theme='light'] .user-shell .summary-stat-label,
+:root[data-theme='light'] .user-shell .ev-stat span {
+  color: #5d7f8d;
+}
+:root[data-theme='light'] .user-shell .user-auto-live-card button,
+:root[data-theme='light'] .user-shell .account-outline,
+:root[data-theme='light'] .user-shell .ev-chip,
+:root[data-theme='light'] .user-shell .ev-pagination nav button,
+:root[data-theme='light'] .user-shell .ev-filter-row input,
+:root[data-theme='light'] .user-shell .ev-filter-actions select,
+:root[data-theme='light'] .user-shell .notification-read-btn {
+  color: #0f2632;
+  border-color: rgba(4, 90, 100, 0.25);
+  background: #f4f9fb;
+}
+:root[data-theme='light'] .user-shell .ev-chip.active,
+:root[data-theme='light'] .user-shell .ev-pagination nav button.active {
+  color: #006974;
+  background: rgba(0, 131, 141, 0.10);
+  border-color: rgba(0, 131, 141, 0.35);
+}
+:root[data-theme='light'] .user-shell .ev-timeline-line { background: rgba(4, 90, 100, 0.20); }
+:root[data-theme='light'] .user-shell .ev-card-dot { border-color: #ffffff; }
+:root[data-theme='light'] .user-shell .ev-flag.yes { color: #00787f; }
+:root[data-theme='light'] .user-shell .ev-btn,
+:root[data-theme='light'] .user-shell .ev-apply { color: #e6f7f8; background: #00838d; border-color: #00838d; }
+:root[data-theme='light'] .user-shell .ev-btn:hover,
+:root[data-theme='light'] .user-shell .ev-apply:hover { background: #00a3ae; }
+:root[data-theme='light'] .user-shell .sev-info .sev-badge, :root[data-theme='light'] .user-shell .sev-badge.sev-info { color: #0e7490; background: rgba(14,116,144,.10); border-color: rgba(14,116,144,.25); }
+:root[data-theme='light'] .user-shell .sev-warning .sev-badge, :root[data-theme='light'] .user-shell .sev-badge.sev-warning { color: #92600a; background: rgba(146,96,10,.10); border-color: rgba(146,96,10,.25); }
+:root[data-theme='light'] .user-shell .sev-high .sev-badge, :root[data-theme='light'] .user-shell .sev-badge.sev-high { color: #b45309; background: rgba(180,83,9,.10); border-color: rgba(180,83,9,.25); }
+:root[data-theme='light'] .user-shell .sev-critical .sev-badge, :root[data-theme='light'] .user-shell .sev-badge.sev-critical { color: #b91c1c; background: rgba(185,28,28,.08); border-color: rgba(185,28,28,.25); }
+:root[data-theme='light'] .user-shell .ev-card.sev-info { border-left-color: #0e7490; }
+:root[data-theme='light'] .user-shell .ev-card.sev-warning { border-left-color: #b78a12; }
+:root[data-theme='light'] .user-shell .ev-card.sev-high { border-left-color: #c2660a; }
+:root[data-theme='light'] .user-shell .ev-card.sev-critical { border-left-color: #c62828; }
+:root[data-theme='light'] .user-shell .live-box,
+:root[data-theme='light'] .user-shell .live-overlay { background: #03070d; }
+:root[data-theme='light'] .user-shell .live-overlay .muted { color: #9db4c0; }
+:root[data-theme='light'] .user-shell .live-badge { color: #f5fbff; }
+/* Acentos claros que quedaban ilegibles sobre blanco */
+:root[data-theme='light'] .user-shell .user-eyebrow { color: #00787f; }
+:root[data-theme='light'] .user-shell .summary-stat strong { color: #0f2632; }
+:root[data-theme='light'] .user-shell .summary-stat strong.summary-alert,
+:root[data-theme='light'] .user-shell .ev-stat strong.ev-critical-n { color: #b91c1c; }
+:root[data-theme='light'] .user-shell .ev-quick button { color: #00787f; }
+:root[data-theme='light'] .user-shell .ev-clear { color: #40616f; }
+:root[data-theme='light'] .user-shell .ev-pagination { color: #41606f; }
+:root[data-theme='light'] .user-shell .ev-ellipsis { color: #5d7f8d; }
+:root[data-theme='light'] .user-shell .ev-filter-row label,
+:root[data-theme='light'] .user-shell .ev-filter-actions label { color: #41606f; }
+:root[data-theme='light'] .user-shell .new-badge { color: #00787f; background: rgba(0,131,141,.08); border-color: rgba(0,131,141,.25); }
+:root[data-theme='light'] .user-shell .read-badge { color: #5d7f8d; }
+:root[data-theme='light'] .user-shell .preferences-saved { color: #1c7a3d; }
+:root[data-theme='light'] .user-shell .preferences-saving,
+:root[data-theme='light'] .user-shell .preferences-loading,
+:root[data-theme='light'] .user-shell .notifications-loading { color: #41606f; }
+:root[data-theme='light'] .user-shell .ev-drawer-close { color: #0f2632; border-color: rgba(4,90,100,.25); }
+:root[data-theme='light'] .user-shell .account-danger h2 { color: #b91c1c; }
+:root[data-theme='light'] .user-shell .account-danger-btn { color: #b91c1c; border-color: rgba(185,28,28,.45); background: rgba(185,28,28,.06); }
+:root[data-theme='light'] .user-shell .account-danger-btn:hover:not(:disabled) { background: rgba(185,28,28,.12); }
+:root[data-theme='light'] .user-shell .notification-read-btn:hover { color: #00787f; }
+:root[data-theme='light'] .user-shell .notification-card.unread { background: rgba(0,131,141,.05); border-color: rgba(0,131,141,.20); }
+/* Botones del inicio: el primario pálido y el outline con texto casi blanco no se leen en claro */
+:root[data-theme='light'] .user-shell .user-home-primary { background: #00838d; border-color: #00838d; color: #ffffff; }
+:root[data-theme='light'] .user-shell .user-home-primary:hover { background: #00a3ae; }
+:root[data-theme='light'] .user-shell .user-home-outline { color: #0f2632; border-color: rgba(4,90,100,.30); }
+:root[data-theme='light'] .user-shell .user-home-outline:hover { color: #006974; border-color: rgba(0,131,141,.45); }
+/* Item activo del menú lateral */
+:root[data-theme='light'] .app-shell .nav-group.open > .nav-group-toggle,
+:root[data-theme='light'] .app-shell .nav-group.active > .nav-group-toggle,
+:root[data-theme='light'] .app-shell .nav-link.active { color: #0f2632; background: rgba(0,131,141,.12); border-color: rgba(0,131,141,.30); }
+/* Dropdown de cuenta: fondo fijo oscuro + rosado claro ilegibles en claro */
+:root[data-theme='light'] .app-shell .dropdown { background: #ffffff; border-color: rgba(4,90,100,.16); box-shadow: 0 12px 32px rgba(13,36,48,.14); }
+:root[data-theme='light'] .app-shell .dropdown-item:hover { background: rgba(0,131,141,.07); color: #0f2632; }
+:root[data-theme='light'] .app-shell .dropdown-item-danger { color: #b91c1c; }
+:root[data-theme='light'] .app-shell .dropdown-item-danger:hover { color: #7f1d1d; background: rgba(185,28,28,.07); }
+:root[data-theme='light'] .app-shell .dropdown-item.dropdown-link { color: #00787f; }
+:root[data-theme='light'] .app-shell .user-avatar { color: #006974; border-color: rgba(0,131,141,.40); background: linear-gradient(135deg, rgba(0,131,141,.16), rgba(108,144,240,.12)); }
+/* Popover de notificaciones en claro */
+:root[data-theme='light'] .user-shell .notification-popover { background: #ffffff; border-color: rgba(4,90,100,.16); box-shadow: 0 20px 55px rgba(13,36,48,.16); }
+:root[data-theme='light'] .user-shell .notification-popover-head strong { color: #0f2632; }
+:root[data-theme='light'] .user-shell .notification-popover-eyebrow { color: #5d7f8d; }
+:root[data-theme='light'] .user-shell .notification-count { color: #41606f; background: rgba(4,90,100,.06); border-color: rgba(4,90,100,.14); }
+:root[data-theme='light'] .user-shell .notification-count.has-unread { color: #b91c1c; background: rgba(185,28,28,.07); border-color: rgba(185,28,28,.22); }
+:root[data-theme='light'] .user-shell .notification-item:hover { background: rgba(0,131,141,.05); border-color: rgba(0,131,141,.14); }
+:root[data-theme='light'] .user-shell .notification-item.is-unread { background: rgba(0,131,141,.06); }
+:root[data-theme='light'] .user-shell .notification-item-title-row strong { color: #0f2632; }
+:root[data-theme='light'] .user-shell .notification-item.is-read .notification-item-title-row strong { color: #5d7f8d; }
+:root[data-theme='light'] .user-shell .notification-unread-label { color: #00787f; background: rgba(0,131,141,.08); border-color: rgba(0,131,141,.25); }
+:root[data-theme='light'] .user-shell .notification-item-message { color: #41606f; }
+:root[data-theme='light'] .user-shell .notification-item-meta { color: #5d7f8d; }
+:root[data-theme='light'] .user-shell .notification-item-meta i { color: #7fa0ad; }
+:root[data-theme='light'] .user-shell .notification-empty-state strong { color: #0f2632; }
+:root[data-theme='light'] .user-shell .notification-empty-state > span:last-child,
+:root[data-theme='light'] .user-shell .notification-empty { color: #41606f; }
+:root[data-theme='light'] .user-shell .notification-view-all { color: #00787f; border-color: rgba(0,131,141,.25); }
+:root[data-theme='light'] .user-shell .notification-view-all:hover { background: rgba(0,131,141,.07); }
+/* Nav activo del user-shell (regla propia con color fijo claro) */
+:root[data-theme='light'] .user-shell .nav-link.active { color: #0f2632; background: rgba(0,131,141,.12); border-color: rgba(0,131,141,.30); }
+/* FAQ expandible de Ayuda */
+.user-shell .help-faq { margin-top: 12px; padding: 17px; border: 1px solid rgba(151,196,211,.11); border-radius: 14px; background: #0d1b2d; }
+.user-shell .help-faq > h2 { color: #ecf4f6; font-size: 14px; margin-bottom: 8px; }
+.user-shell .help-faq-item { border-top: 1px solid rgba(151,196,211,.08); }
+.user-shell .help-faq-item:first-of-type { border-top: 0; }
+.user-shell .help-faq-item summary { padding: 12px 4px; color: #e4edf0; font-size: 12.5px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.user-shell .help-faq-item summary::-webkit-details-marker { display: none; }
+.user-shell .help-faq-item summary::after { content: '+'; flex: none; color: #68d4d4; font-size: 16px; font-weight: 700; }
+.user-shell .help-faq-item[open] summary::after { content: '–'; }
+.user-shell .help-faq-item p { padding: 0 4px 14px; color: #869eac; font-size: 11.5px; line-height: 1.6; }
+:root[data-theme='light'] .user-shell .help-faq { background: #ffffff; border-color: rgba(4,90,100,.16); }
+:root[data-theme='light'] .user-shell .help-faq > h2,
+:root[data-theme='light'] .user-shell .help-faq-item summary { color: #0f2632; }
+:root[data-theme='light'] .user-shell .help-faq-item summary::after { color: #00787f; }
+:root[data-theme='light'] .user-shell .help-faq-item p { color: #41606f; }

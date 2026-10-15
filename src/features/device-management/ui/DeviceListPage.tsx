@@ -163,15 +163,16 @@ export function DeviceListPage() {
 
       <div className="device-table-wrap">
         <table className="device-table">
-          <thead><tr><th>Dispositivo</th><th>Estado</th><th>Firmware</th><th>Asignación</th><th>Último contacto</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Dispositivo</th><th>Estado</th><th>Firmware</th><th>Claim code</th><th>Asignación</th><th>Último contacto</th><th>Acciones</th></tr></thead>
           <tbody>
-            {loading ? <tr><td colSpan={6} className="device-table-message">Cargando dispositivos…</td></tr> : null}
-            {!loading && result.data.length === 0 ? <tr><td colSpan={6} className="device-table-message">No hay dispositivos para mostrar.</td></tr> : null}
+            {loading ? <tr><td colSpan={7} className="device-table-message">Cargando dispositivos…</td></tr> : null}
+            {!loading && result.data.length === 0 ? <tr><td colSpan={7} className="device-table-message">No hay dispositivos para mostrar.</td></tr> : null}
             {!loading && result.data.map((device) => (
               <tr key={device.id}>
                 <td><strong>{device.serialNumber || 'Sin número de serie'}</strong><small>{device.id}</small></td>
                 <td><span className={`device-status ${device.statusCategory?.toLowerCase() || device.status.toLowerCase()}`}>{device.status || '—'}</span></td>
                 <td>{device.firmwareVersion || '—'}</td>
+                <td>{device.claimCode ? <span className="device-secret"><code>{device.claimCode}</code><button onClick={() => void copy(device.claimCode!)}>Copiar</button></span> : '—'}</td>
                 <td>{device.assignedUserId ? <span title={device.assignedUserId}>Asignado · {device.assignedUserId.slice(0, 8)}…</span> : 'Sin asignar'}</td>
                 <td>{date(device.lastHeartbeatAt)}</td>
                 <td><div className="device-row-actions">
@@ -194,7 +195,7 @@ export function DeviceListPage() {
           <button className="device-modal-close" onClick={() => setDialog(null)} aria-label="Cerrar">×</button>
           <h2 id="device-modal-title">{{ create: 'Registrar dispositivo', edit: 'Editar dispositivo', assign: 'Asignar dispositivo', claim: 'Vincular dispositivo', token: 'Token de aprovisionamiento', details: 'Detalle del dispositivo' }[dialog]}</h2>
           {dialog === 'details' && selected ? <div className="device-detail-grid">
-            <span>Serie</span><strong>{selected.serialNumber || '—'}</strong><span>ID</span><strong>{selected.id}</strong><span>Estado</span><strong>{selected.status || '—'}</strong><span>Firmware</span><strong>{selected.firmwareVersion || '—'}</strong><span>Usuario asignado</span><strong>{selected.assignedUserId || 'Sin asignar'}</strong><span>IP reciente</span><strong>{selected.lastSeenIp || '—'}</strong><span>Último heartbeat</span><strong>{date(selected.lastHeartbeatAt)}</strong><span>Versión aplicada</span><strong>{selected.appliedConfigVersion ?? '—'}</strong><span>Configuración pendiente</span><strong>{selected.pendingConfigUpdate ? 'Sí' : 'No'}</strong>
+            <span>Serie</span><strong>{selected.serialNumber || '—'}</strong><span>ID</span><strong>{selected.id}</strong><span>Código de vinculación</span><strong className="device-secret">{selected.claimCode || '—'}{selected.claimCode ? <button onClick={() => void copy(selected.claimCode!)}>Copiar</button> : null}</strong><span>Estado</span><strong>{selected.status || '—'}</strong><span>Firmware</span><strong>{selected.firmwareVersion || '—'}</strong><span>Usuario asignado</span><strong>{selected.assignedUserId || 'Sin asignar'}</strong><span>IP reciente</span><strong>{selected.lastSeenIp || '—'}</strong><span>Último heartbeat</span><strong>{date(selected.lastHeartbeatAt)}</strong><span>Versión aplicada</span><strong>{selected.appliedConfigVersion ?? '—'}</strong><span>Configuración pendiente</span><strong>{selected.pendingConfigUpdate ? 'Sí' : 'No'}</strong>
             {rotatedKey ? <><span>Nueva API Key</span><strong className="device-secret">{rotatedKey.apiKey}<button onClick={() => void copy(rotatedKey.apiKey)}>Copiar</button></strong></> : null}
             <button className="device-button secondary device-modal-action" disabled={busy} onClick={() => void rotateKey()}>Rotar API Key</button>
           </div> : null}

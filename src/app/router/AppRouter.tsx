@@ -6,11 +6,16 @@ import { RequireAuth } from './guards/RequireAuth';
 import { RequireRole } from './guards/RequireRole';
 import { paths } from './paths';
 import { VerifyEmailRoute, VerifyResetCodeRoute, ResetPasswordRoute } from './AuthFlowRoutes';
+import { TermsPage } from '../../features/legal/ui/TermsPage';
+import { PrivacyPage } from '../../features/legal/ui/PrivacyPage';
 import { AdminDashboard } from '../../features/dashboard/ui/AdminDashboard';
 import { UserDashboard } from '../../features/dashboard/ui/UserDashboard';
 import { MyAlertsPage } from '../../features/user-alerts/ui/MyAlertsPage';
 import { MyEventsPage } from '../../features/user-events/ui/MyEventsPage';
 import { MyDevicePage } from '../../features/user-device/ui/MyDevicePage';
+import { MyAccountPage } from '../../features/user-device/ui/MyAccountPage';
+import { MySupportPage } from '../../features/user-device/ui/MySupportPage';
+import { MySecurityPage } from '../../features/auth/ui/MySecurityPage';
 import { NotificationPreferencesPage } from '../../features/user-alerts/ui/NotificationPreferencesPage';
 import { SecurityPage } from '../../features/security/ui/SecurityPage';
 import { ForbiddenPage } from './pages/ForbiddenPage';
@@ -41,6 +46,8 @@ export function AppRouter() {
         <Route path={paths.public.verifyEmail} element={<VerifyEmailRoute />} />
         <Route path={paths.public.verifyResetCode} element={<VerifyResetCodeRoute />} />
         <Route path={paths.public.resetPassword} element={<ResetPasswordRoute />} />
+        <Route path={paths.public.terms} element={<TermsPage />} />
+        <Route path={paths.public.privacy} element={<PrivacyPage />} />
         <Route path={paths.public.home} element={<HomeRoute />} />
       </Route>
 
@@ -82,6 +89,9 @@ export function AppRouter() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<UserDashboard />} />
             <Route path="monitoreo" element={<MyDevicePage />} />
+            <Route path="cuenta" element={<MyAccountPage />} />
+            <Route path="seguridad" element={<MySecurityPage />} />
+            <Route path="ayuda" element={<MySupportPage />} />
             <Route path="my-alerts" element={<MyAlertsPage />} />
             <Route path="my-events" element={<MyEventsPage />} />
             <Route path="preferences" element={<NotificationPreferencesPage />} />

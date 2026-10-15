@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { Header } from '../../shared/ui/Header';
 import { Footer } from '../../shared/ui/Footer';
+import { SomnguardLogoStatic } from '../../shared/ui/SomnguardLogo';
+import { useLang } from '../../shared/i18n/LanguageContext';
 import { AuthModals } from '../../features/auth/ui/AuthModals';
 import { Hero } from '../../features/landing/ui/Hero';
 import { useAuth } from '../../features/auth/model/AuthContext';
@@ -10,6 +12,7 @@ import type { RegisterPayload } from '../../features/auth/api/auth.api';
 
 export function PublicLayout() {
   const { isAuthenticated, isInitializing, user, login, register, forgot, logout } = useAuth();
+  const { t } = useLang();
   const navigate = useNavigate();
   const location = useLocation();
   const [modal, setModal] = useState<'login' | 'register' | 'forgot' | null>(null);
@@ -43,6 +46,9 @@ export function PublicLayout() {
     location.pathname === paths.public.verifyEmail ||
     location.pathname === paths.public.verifyResetCode ||
     location.pathname === paths.public.resetPassword;
+  const isLegal =
+    location.pathname === paths.public.terms ||
+    location.pathname === paths.public.privacy;
 
   // Tras verificar email o restablecer contraseña se vuelve al inicio
   // con el modal de login abierto (antes lo hacía App.tsx con setModal).
@@ -63,8 +69,20 @@ export function PublicLayout() {
 
   return (
     <div className="public-app">
-      <Header isAuthenticated={isAuthenticated} onOpen={(m) => setModal(m)} onLogout={handleLogout} />
-      {isAuthFlow ? <Outlet /> : <Hero />}
+      {isLegal && isAuthenticated ? (
+        <header className="header">
+          <div className="logo-header">
+            <SomnguardLogoStatic size={36} />
+            <span className="logo-header-text">SOMNGUARD</span>
+          </div>
+          <div className="nav-buttons">
+            <button className="btn-nav" onClick={() => navigate(-1)}>← {t('nav.back')}</button>
+          </div>
+        </header>
+      ) : (
+        <Header isAuthenticated={false} onOpen={(m) => setModal(m)} onLogout={handleLogout} />
+      )}
+      {isAuthFlow || isLegal ? <Outlet /> : <Hero />}
       <AuthModals
         open={modal}
         onClose={() => setModal(null)}
