@@ -7,6 +7,8 @@ export const paths = {
     verifyEmail: '/verify-email',
     verifyResetCode: '/verify-reset-code',
     resetPassword: '/reset-password',
+    terms: '/terminos',
+    privacy: '/privacidad',
   },
   admin: {
     root: '/admin',
@@ -26,6 +28,9 @@ export const paths = {
     root: '/user',
     dashboard: '/user/dashboard',
     device: '/user/monitoreo',
+    account: '/user/cuenta',
+    security: '/user/seguridad',
+    help: '/user/ayuda',
     alerts: '/user/my-alerts',
     events: '/user/my-events',
     preferences: '/user/preferences',

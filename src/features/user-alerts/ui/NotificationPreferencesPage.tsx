@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getPreferencesApi, updatePreferencesApi, type NotificationPreferences } from '../../notifications/api/notifications.api';
+import { useLang, type AppLanguage } from '../../../shared/i18n/LanguageContext';
+import { useTheme, type ThemeName } from '../../../shared/theme/ThemeContext';
 
 function BellIcon() {
   return (
@@ -10,7 +12,12 @@ function BellIcon() {
   );
 }
 
+const THEMES: ThemeName[] = ['dark', 'light'];
+const LANGS: AppLanguage[] = ['es', 'en'];
+
 export function NotificationPreferencesPage() {
+  const { t, lang, setLang } = useLang();
+  const { theme, setTheme } = useTheme();
   const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,8 +69,8 @@ export function NotificationPreferencesPage() {
     <section className="module-page user-page">
       <header className="page-header user-page-header">
         <div>
-          <h1>Preferencias</h1>
-          <p>Controla cómo quieres recibir los avisos de SomnGuard. Este apartado es independiente del historial de notificaciones.</p>
+          <h1>{t('prefs.title')}</h1>
+          <p>{t('prefs.subtitle')}</p>
         </div>
       </header>
 
@@ -77,15 +84,15 @@ export function NotificationPreferencesPage() {
             <div className="preferences-card-head">
               <span className="preferences-icon"><BellIcon /></span>
               <div>
-                <h2>Notificaciones</h2>
-                <p>Activa o desactiva los avisos que se muestran en tu cuenta y las notificaciones push.</p>
+                <h2>{t('prefs.notifications')}</h2>
+                <p>{t('prefs.notificationsHint')}</p>
               </div>
             </div>
 
             <div className="preference-toggle-row">
               <div>
-                <strong>Recibir notificaciones</strong>
-                <span>{enabled ? 'Los avisos están habilitados.' : 'Los avisos están deshabilitados.'}</span>
+                <strong>{t('prefs.toggle')}</strong>
+                <span>{enabled ? t('prefs.toggleOn') : t('prefs.toggleOff')}</span>
               </div>
               <button
                 type="button"
@@ -105,17 +112,41 @@ export function NotificationPreferencesPage() {
           <section className="preferences-card preferences-secondary">
             <div className="preferences-card-head compact">
               <div>
-                <h2>Configuración actual</h2>
-                <p>Valores definidos por tu cuenta.</p>
+                <h2>{t('prefs.appearance')}</h2>
+                <p>{t('prefs.appearanceHint')}</p>
               </div>
             </div>
-            <dl className="preferences-list">
-              <div><dt>En la aplicación</dt><dd>{prefs?.inAppEnabled ? 'Activa' : 'Desactivada'}</dd></div>
-              <div><dt>Push</dt><dd>{prefs?.pushEnabled ? 'Activa' : 'Desactivada'}</dd></div>
-              <div><dt>Correo</dt><dd>{prefs?.emailEnabled ? 'Activo' : 'No configurado'}</dd></div>
-              <div><dt>Zona horaria</dt><dd>{prefs?.timezone || 'No definida'}</dd></div>
-              <div><dt>Severidad mínima</dt><dd>{prefs?.minSeverityCode || 'No definida'}</dd></div>
-            </dl>
+            <div className="ev-chips" role="group" aria-label={t('prefs.appearance')} style={{ marginTop: 12 }}>
+              {THEMES.map((th) => (
+                <button
+                  key={th}
+                  type="button"
+                  className={`ev-chip${theme === th ? ' active' : ''}`}
+                  onClick={() => setTheme(th)}
+                >
+                  {t(th === 'dark' ? 'prefs.theme.dark' : 'prefs.theme.light')}
+                </button>
+              ))}
+            </div>
+
+            <div className="preferences-card-head compact" style={{ marginTop: 18 }}>
+              <div>
+                <h2>{t('prefs.language')}</h2>
+                <p>{t('prefs.languageHint')}</p>
+              </div>
+            </div>
+            <div className="ev-chips" role="group" aria-label={t('prefs.language')} style={{ marginTop: 12 }}>
+              {LANGS.map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  className={`ev-chip${lang === l ? ' active' : ''}`}
+                  onClick={() => setLang(l)}
+                >
+                  {t(l === 'es' ? 'prefs.lang.es' : 'prefs.lang.en')}
+                </button>
+              ))}
+            </div>
           </section>
         </div>
       )}

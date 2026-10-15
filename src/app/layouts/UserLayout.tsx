@@ -1,18 +1,30 @@
-import { ShellLayout, analyticsGroup, dashboardGroup, eventsGroup, preferencesGroup, deviceGroup } from './ShellLayout';
+import { ShellLayout, analyticsGroup, dashboardGroup, deviceGroup, eventsGroup, settingsGroup } from './ShellLayout';
 import { paths } from '../router/paths';
+import { useLang } from '../../shared/i18n/LanguageContext';
 
 export function UserLayout() {
+  const { t } = useLang();
+  const dashboard = dashboardGroup(paths.user.dashboard);
+  const analytics = analyticsGroup(paths.user.analytics);
+  const device = deviceGroup(paths.user.device);
+  const events = eventsGroup([
+    { to: paths.user.events, label: t('menu.history') },
+    { to: paths.user.alerts, label: t('menu.notifications') },
+  ]);
+  const settings = settingsGroup([
+    { to: paths.user.account, label: t('menu.account') },
+    { to: paths.user.security, label: t('menu.security') },
+    { to: paths.user.preferences, label: t('menu.preferences') },
+    { to: paths.user.help, label: t('menu.help') },
+  ]);
   return (
     <ShellLayout
       menu={[
-        dashboardGroup(paths.user.dashboard),
-        analyticsGroup(paths.user.analytics),
-        deviceGroup(paths.user.device),
-        eventsGroup([
-          { to: paths.user.events, label: 'Historial' },
-          { to: paths.user.alerts, label: 'Notificaciones' },
-        ]),
-        preferencesGroup(paths.user.preferences),
+        { ...dashboard, title: t('menu.home') },
+        { ...device, title: t('menu.monitoring') },
+        { ...events, title: t('menu.events') },
+        { ...analytics, title: t('menu.analytics') },
+        { ...settings, title: t('menu.settings') },
       ]}
     />
   );

@@ -396,31 +396,24 @@ export function AutoLiveBox() {
   const hasVideo = (frames > 0 || rtcOn) && camOn;
   const systemActive = deviceStatus === 'DEVICE_ACTIVE';
   const dot = !deviceId ? '#9ca3af' : systemActive ? '#22c55e' : '#eab308';
+  const liveLabel = !camOn ? 'Pausado' : hasVideo ? 'En vivo' : sessionStarting() ? 'Conectando' : 'Sin video';
+  const liveDot = hasVideo && camOn ? '#22c55e' : '#9ca3af';
+
+  function sessionStarting(): boolean {
+    return camOn && !!deviceId && !hasVideo;
+  }
 
   return (
-    <div className="simple-panel user-auto-live-card">
-      <p className="muted">
-        <span className="net-dot" title={deviceStatus || 'buscando'} style={{ background: dot, display: 'inline-block', width: 10, height: 10, borderRadius: '50%', marginRight: 6 }} />
-        {!deviceId ? 'Buscando dispositivo…' : systemActive ? 'Sistema activo' : 'Sistema inactivo'}
-      </p>
-      <div
-        className="live-box"
-        style={{
-          position: 'relative', width: '100%', maxWidth: 640, margin: '0 auto',
-          aspectRatio: '4 / 3',
-          background: '#000', borderRadius: 12, overflow: 'hidden',
-        }}
-      >
+    <div className="user-live-card user-auto-live-card">
+      <div className="live-head">
+        <span className="live-dot" title={deviceStatus || 'buscando'} style={{ background: dot }} />
+        <strong>{!deviceId ? 'Buscando dispositivo…' : systemActive ? 'Sistema activo' : 'Sistema inactivo'}</strong>
+        <span className="live-hint">{deviceId ? `Device ${deviceId.slice(0, 8)}…` : 'Asignando tu dispositivo'}</span>
+      </div>
+      <div className="live-box">
         {!hasVideo && (
-          <div
-            style={{
-              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', flexDirection: 'column', gap: 8,
-              background: 'radial-gradient(ellipse at center, #111827 0%, #000 70%)',
-              filter: 'blur(0.5px)',
-            }}
-          >
-            <div className="state-icon">◌</div>
+          <div className="live-overlay">
+            <div className="state-icon" aria-hidden="true">{camOn ? '◌' : '⏸'}</div>
             <p className="muted">{note}</p>
           </div>
         )}
@@ -436,18 +429,22 @@ export function AutoLiveBox() {
           muted
           style={{ display: hasVideo && rtcOn ? 'block' : 'none', width: '100%', height: '100%', objectFit: 'cover' }}
         />
+        <div className="live-badge" aria-live="polite">
+          <span className="live-badge-dot" style={{ background: liveDot }} />
+          {liveLabel}
+        </div>
       </div>
-      <div className="row" style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-        <button type="button" onClick={toggleCam} disabled={!deviceId}>
+      <div className="live-controls">
+        <button type="button" className="live-primary" onClick={toggleCam} disabled={!deviceId}>
           {camOn ? 'Apagar cámara' : 'Encender cámara'}
         </button>
         <button type="button" onClick={toggleDetection} disabled={!deviceId}>
           {detectPaused ? 'Reanudar detección' : 'Pausar detección'}
         </button>
       </div>
-      {detectPaused && <p className="muted" style={{ marginTop: 8 }}>Detección pausada en el Pi: no se despausa sola, solo con reanudar o reinicio.</p>}
-      {!hasVideo && camOn && <p className="muted" style={{ marginTop: 8 }}>{note}</p>}
-      {!camOn && <p className="muted" style={{ marginTop: 8 }}>Apagada: sin sesión en backend, el Pi no gasta datos ni CPU en video.</p>}
+      {detectPaused && <p className="live-note">Detección pausada en el Pi: no se despausa sola, solo con reanudar o reinicio.</p>}
+      {!hasVideo && camOn && <p className="live-note">{note}</p>}
+      {!camOn && <p className="live-note">Apagada: sin sesión en backend, el Pi no gasta datos ni CPU en video.</p>}
     </div>
   );
 }

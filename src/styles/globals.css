@@ -21,6 +21,38 @@
   --radius-button: 13px;
 }
 
+:root[data-theme='light'] {
+  --bg-primary: #eef4f6;
+  --bg-surface: #ffffff;
+  --bg-input: #f2f7f9;
+  --bg-input-focused: #e8f3f5;
+  --border: rgba(4, 90, 100, 0.22);
+  --border-focused: #0097a3;
+  --accent: #0097a3;
+  --accent-light: rgba(0, 151, 163, 0.10);
+  --text: #0d2430;
+  --text-muted: #4f6f7e;
+  --error: #c62828;
+  --placeholder: #7fa0ad;
+}
+
+/* Logo SomnGuard adaptativo: relleno oscuro en dark, outline en claro. */.sg-logo-shield, .sg-logo-eye { fill: #0c1b2e; stroke: #00c8c8; }
+.sg-logo-pupil { fill: #00c8c8; stroke: none; }
+.sg-logo-smile { fill: none; stroke: #00c8c8; }
+:root[data-theme='light'] .sg-logo-shield,
+:root[data-theme='light'] .sg-logo-eye { fill: #ffffff; stroke: #00787f; }
+:root[data-theme='light'] .sg-logo-pupil { fill: #00787f; }
+:root[data-theme='light'] .sg-logo-smile { stroke: #00787f; }
+
+/* Páginas legales públicas */
+.legal-page { max-width: 780px; margin: 0 auto; padding: 112px 24px 64px; color: var(--text); }
+.legal-page h1 { font-size: clamp(26px, 4vw, 36px); margin: 10px 0 18px; }
+.legal-page h2 { font-size: 18px; margin: 26px 0 8px; color: var(--accent); }
+.legal-page p { margin-top: 8px; line-height: 1.7; color: var(--text); opacity: .92; }
+.legal-draft { padding: 10px 14px; border-radius: 10px; font-size: 12.5px; background: rgba(255,191,105,.08); border: 1px solid rgba(255,191,105,.35); color: #ffcf8e; }
+:root[data-theme='light'] .legal-draft { color: #92600a; }
+.legal-note { font-size: 12.5px; opacity: .75; }
+
 html { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -63,6 +95,7 @@ body {
   z-index: 100;
   border-bottom: 1px solid var(--border);
 }
+:root[data-theme='light'] .header { background: rgba(255, 255, 255, 0.95); }
 
 .logo-header {
   display: flex;
@@ -184,6 +217,7 @@ body {
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(0, 200, 200, 0.3);
 }
+:root[data-theme='light'] .btn-download:hover { color: #006974; }
 
 .hero-right {
   display: flex;
@@ -292,6 +326,13 @@ body {
   font-weight: 600;
   font-size: 14px;
 }
+
+/* Aceptación de términos en registro */
+.terms-check { display: flex; align-items: flex-start; gap: 10px; margin: 14px 0 4px; cursor: pointer; }
+.terms-check input { width: 17px; height: 17px; margin-top: 2px; flex: none; accent-color: var(--accent); cursor: pointer; }
+.terms-check span { color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+.terms-check a { color: var(--accent); font-weight: 700; }
+.terms-check a:hover { text-decoration: underline; }
 
 .form-input {
   width: 100%;
@@ -1082,6 +1123,21 @@ body {
 .footer-sep {
   opacity: 0.4;
 }
+.footer-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.footer-theme-btn:hover { color: var(--accent); border-color: var(--accent); }
 
 @media (max-width: 640px) {
   .footer { padding: 20px 16px; padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
