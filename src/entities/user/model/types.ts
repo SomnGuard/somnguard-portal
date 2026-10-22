@@ -1,2 +1,14 @@
-// Re-export User entity for feature-based architecture
-export type { User } from '../../../features/auth/api/auth.api';
+export type UserRole = 'ADMIN' | 'USER';
+
+export interface User {
+  id?: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  email: string;
+  phone?: string;
+  roles: UserRole[];
+  permissions: string[];
+  token?: string;
+  refreshToken?: string;
+}

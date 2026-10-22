@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { SomnguardLogoStatic } from '../../../shared/ui/SomnguardLogo';
+import { paths } from '../../../app/router/paths';
 import {
   getPasswordStrength,
   sanitizeEmail,
@@ -204,6 +206,8 @@ function RegisterModal({ open, onClose, onSwitch, onRegister }: { open: boolean;
   const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState<{ firstName?: string; lastName?: string; email?: string; phone?: string; password?: string; confirm?: string }>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
   const toast = useToast();
@@ -234,6 +238,8 @@ function RegisterModal({ open, onClose, onSwitch, onRegister }: { open: boolean;
     setTouched(nt);
     const result = validateRegister(firstName, lastName, email, phone, password, confirm);
     if (!result.valid) { setErrors(result.errors); return; }
+    if (!acceptedTerms) { setTermsError('Debes aceptar los Términos y la Política de Privacidad para registrarte.'); return; }
+    setTermsError('');
     setSubmitting(true);
     try {
       const payload: RegisterPayload = {
@@ -247,7 +253,7 @@ function RegisterModal({ open, onClose, onSwitch, onRegister }: { open: boolean;
       console.log('[RegisterModal] register ok', { email: sanitizeEmail(email) });
       toast({ title: 'Cuenta creada', msg: 'Cuenta creada. Ahora verifica tu correo para continuar.', type: 'success' });
       onClose();
-      setFirstName(''); setLastName(''); setEmail(''); setPhone(''); setPassword(''); setConfirm(''); setErrors({}); setTouched({});
+      setFirstName(''); setLastName(''); setEmail(''); setPhone(''); setPassword(''); setConfirm(''); setErrors({}); setTouched({}); setAcceptedTerms(false); setTermsError('');
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         const fieldErrors = mapDetailsToFieldErrors(err.details);
@@ -404,6 +410,18 @@ function RegisterModal({ open, onClose, onSwitch, onRegister }: { open: boolean;
         </div>
 
         {apiError && <div className="form-error" style={{ display: 'block' }} role="alert">{apiError}</div>}
+        <label className="terms-check">
+          <input
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e) => { setAcceptedTerms(e.target.checked); if (e.target.checked) setTermsError(''); }}
+          />
+          <span>
+            Acepto los <Link to={paths.public.terms} target="_blank" rel="noopener noreferrer">Términos y Condiciones</Link>
+            {' '}y la <Link to={paths.public.privacy} target="_blank" rel="noopener noreferrer">Política de Privacidad</Link>.
+          </span>
+        </label>
+        {termsError && <div className="field-error" role="alert">{termsError}</div>}
         <button type="submit" className="btn-submit" id="registerBtn" disabled={submitting}>
           {submitting && <span className="spinner" aria-hidden />}
           {submitting ? 'Creando cuenta...' : 'Registrarse'}
@@ -440,13 +458,14 @@ function ForgotModal({ open, onClose, onSwitch, onForgot }: { open: boolean; onC
     setSubmitting(true);
     try {
       await onForgot(sanitizeEmail(email));
-      const linkMsg = 'Si existe una cuenta asociada a este correo, se envió un enlace para restablecer la contraseña.';
-      setSuccess(linkMsg);
-      toast({ title: 'Correo enviado', msg: linkMsg, type: 'success' });
+      const codeMsg = 'Si el correo existe, se envió un código de 6 dígitos con expiración 15 minutos';
+      setSuccess(codeMsg);
+      toast({ title: 'Código enviado', msg: 'Recibirás un código de 6 dígitos en tu correo.', type: 'success' });
+      // Cierre rápido: el flujo de recuperación (verify-code) lo maneja App.tsx tras el éxito del endpoint
       setTimeout(() => {
         setEmail(''); setSuccess(''); setTouched(false);
         onClose();
-      }, 1800);
+      }, 400);
     } catch (err: unknown) {
       if (err instanceof ApiError && err.details.length > 0) {
         const fieldErrors = mapDetailsToFieldErrors(err.details);
@@ -492,14 +511,14 @@ function ForgotModal({ open, onClose, onSwitch, onForgot }: { open: boolean; onC
             autoComplete="email"
           />
           <div className="field-error" id="forgotEmailError">{errors.email || ''}</div>
-          <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 8 }}>Te enviaremos un enlace para restablecer tu contraseña</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 8 }}>Te enviaremos un código de 6 dígitos para restablecer tu contraseña</p>
         </div>
 
         {apiError && <div className="form-error" style={{ display: 'block' }} role="alert">{apiError}</div>}
         {success && <div className="form-success" role="status">{success}</div>}
         <button type="submit" className="btn-submit" id="forgotBtn" disabled={submitting}>
           {submitting && <span className="spinner" aria-hidden />}
-          {submitting ? 'Enviando...' : 'Enviar enlace'}
+          {submitting ? 'Enviando...' : 'Enviar código'}
         </button>
       </form>
 
