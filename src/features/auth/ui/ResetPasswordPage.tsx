@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SomnguardLogoStatic } from '../../../shared/ui/SomnguardLogo';
 import {
   getPasswordStrength,
@@ -9,8 +9,9 @@ import { useToast } from '../../../shared/ui/Toast';
 import { ApiError, getUserMessage, mapDetailsToFieldErrors } from '../../../shared/api/errors';
 
 type Props = {
-  initialToken?: string;
-  onReset: (token: string, newPassword: string) => Promise<void>;
+  code: string;
+  email?: string;
+  onReset: (code: string, newPassword: string) => Promise<void>;
   onBack: () => void;
   onSuccess?: () => void;
 };
@@ -23,21 +24,48 @@ function EyeIcon({ off }: { off?: boolean }) {
   );
 }
 
-export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSuccess }: Props) {
-  // Fallback: si App no pasó token pero la URL sí trae ?token=, leerlo aquí directamente (fix para ?token perdido por navigate/replaceState)
-  const getTokenFromUrl = () => {
-    const s = new URLSearchParams(window.location.search);
-    let t = s.get('token') || s.get('resetToken') || s.get('reset_token');
-    if (t) return t;
-    if (window.location.hash.includes('?')) {
-      const h = new URLSearchParams(window.location.hash.split('?')[1] || '');
-      t = h.get('token') || h.get('resetToken') || h.get('reset_token');
-      if (t) return t;
-    }
-    return '';
-  };
+function mapResetError(err: ApiError): { apiError?: string; fieldErrors?: Record<string,string> } {
+  const msg = (err.message || '').toLowerCase();
+  const detailsStr = err.details.map((d) => `${d.field} ${d.issue}`.toLowerCase()).join(' ');
+  const combined = `${msg} ${detailsStr}`;
 
-  const [token, setToken] = useState(() => (initialToken || getTokenFromUrl()).trim());
+  // token/code errors
+  const isTokenField = err.details.some((d) => ['token','code'].includes(d.field.toLowerCase()));
+  const isCodeMsg = combined.includes('código') || combined.includes('codigo') || combined.includes('token') || combined.includes('code');
+
+  if (isTokenField || isCodeMsg) {
+    if (combined.includes('expir')) {
+      return { apiError: 'El código ha expirado. Solicita un nuevo código.' };
+    }
+    if (combined.includes('ya no es válido') || combined.includes('utilizado') || combined.includes('usado') || combined.includes('consumido') || combined.includes('invalid') && combined.includes('used')) {
+      return { apiError: 'Este código ya no es válido. Solicita un nuevo código.' };
+    }
+    if (combined.includes('incorrecto') || combined.includes('inválido') || combined.includes('invalido') || err.status === 400) {
+      // prioriza campo si es 400
+      if (err.status === 400) return { apiError: 'El código ingresado es incorrecto o ha expirado.' };
+    }
+  }
+
+  // si es error de validación de contraseña, mapear a campo
+  const fieldErrors = mapDetailsToFieldErrors(err.details);
+  const mapped: Record<string,string> = {};
+  if (fieldErrors.newPassword || fieldErrors.new_password) mapped.newPassword = fieldErrors.newPassword ?? fieldErrors.new_password;
+  if (fieldErrors.password) mapped.newPassword = fieldErrors.password;
+  if (fieldErrors.confirm) mapped.confirm = fieldErrors.confirm;
+
+  if (Object.keys(mapped).length > 0) {
+    return { fieldErrors: mapped };
+  }
+
+  // código inválido genérico por status
+  if (err.status === 400 && (isTokenField || isCodeMsg)) {
+    return { apiError: 'El código ingresado es incorrecto o ha expirado.' };
+  }
+
+  return { apiError: getUserMessage(err) };
+}
+
+export function ResetPasswordPage({ code, email, onReset, onBack, onSuccess }: Props) {
   const [newPassword, setNewPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -49,81 +77,51 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
   const [success, setSuccess] = useState('');
   const toast = useToast();
 
-  const hasToken = token.length > 0;
+  const hasCode = code.trim().length === 6 && /^\d{6}$/.test(code.trim());
   const strength = useMemo(() => getPasswordStrength(newPassword), [newPassword]);
-
-  // Sincroniza si Appactualiza initialToken y limpia la URL para no exponer el token
-  useEffect(() => {
-    if (initialToken && initialToken !== token) setToken(initialToken.trim());
-  }, [initialToken]);
-
-  useEffect(() => {
-    if (hasToken) {
-      // Limpia el query del navegador tras capturarlo (evita que quede en historial)
-      const url = new URL(window.location.href);
-      const hadToken = url.searchParams.has('token') || url.searchParams.has('resetToken') || url.searchParams.has('reset_token');
-      if (hadToken) {
-        url.searchParams.delete('token');
-        url.searchParams.delete('resetToken');
-        url.searchParams.delete('reset_token');
-        const clean = url.pathname + (url.search ? `?${url.searchParams.toString()}` : '') + url.hash.split('?')[0];
-        window.history.replaceState({}, '', clean || '/reset-password');
-      } else if (window.location.hash.includes('token')) {
-        const baseHash = window.location.hash.split('?')[0];
-        window.history.replaceState({}, '', window.location.pathname + window.location.search + baseHash);
-      }
-    }
-  }, [hasToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
     setSuccess('');
 
-    if (!hasToken) {
-      setApiError('El enlace de recuperación no es válido o ha expirado. Solicita uno nuevo.');
+    if (!code.trim()) {
+      setApiError('Este código ya no es válido. Solicita un nuevo código.');
       return;
     }
 
     const nt = { token: true, newPassword: true, confirm: true };
     setTouched(nt);
-    const { valid, errors: v } = validateResetPassword(token, newPassword, confirm);
+    const { valid, errors: v } = validateResetPassword(code, newPassword, confirm);
     if (!valid) {
       setErrors({ newPassword: v.newPassword, confirm: v.confirm });
-      if (v.token) setApiError(v.token);
+      if (v.token) setApiError('Este código ya no es válido. Solicita un nuevo código.');
       return;
     }
     setErrors({});
     setSubmitting(true);
     try {
-      await onReset(token, newPassword);
-      setSuccess('Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
-      toast({ title: 'Contraseña actualizada', msg: 'Tu contraseña fue restablecida. Inicia sesión.', type: 'success' });
+      await onReset(code.trim(), newPassword);
+      setSuccess('Tu contraseña se actualizó correctamente. Debes iniciar sesión nuevamente.');
+      toast({ title: 'Contraseña actualizada', msg: 'Tu contraseña se actualizó correctamente.', type: 'success' });
       setTimeout(() => {
         if (onSuccess) onSuccess();
         else onBack();
-      }, 1500);
+      }, 1400);
     } catch (err: unknown) {
       if (err instanceof ApiError) {
-        // token inválido / expirado / ya usado -> mensaje específico
-        const isTokenError =
-          err.details.some((d) => d.field === 'token') ||
-          err.message.toLowerCase().includes('token') ||
-          err.message.toLowerCase().includes('expirado') ||
-          err.message.toLowerCase().includes('inválido') ||
-          err.code === 'BAD_REQUEST';
-
-        if (isTokenError) {
-          setApiError('El enlace de recuperación no es válido o ha expirado. Solicita uno nuevo.');
-          return;
-        }
-
-        const fieldErrors = mapDetailsToFieldErrors(err.details);
-        const mapped: typeof errors = {};
-        if (fieldErrors.newPassword || fieldErrors.new_password) mapped.newPassword = fieldErrors.newPassword ?? fieldErrors.new_password;
-        if (Object.keys(mapped).length > 0) {
-          setErrors((prev) => ({ ...prev, ...mapped }));
-          setApiError('');
+        const mapped = mapResetError(err);
+        if (mapped.fieldErrors) {
+          setErrors((prev) => ({ ...prev, ...mapped.fieldErrors }));
+          if (mapped.apiError) setApiError(mapped.apiError);
+        } else if (mapped.apiError) {
+          // si es error de token/código, no asignar a campo sino a apiError
+          const lower = mapped.apiError.toLowerCase();
+          if (lower.includes('código') || lower.includes('codigo') || lower.includes('token')) {
+            setApiError(mapped.apiError);
+          } else {
+            setApiError(mapped.apiError);
+          }
         } else {
           setApiError(getUserMessage(err));
         }
@@ -135,30 +133,30 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
     }
   };
 
-  // Sin token -> enlace inválido
-  if (!hasToken) {
+  // Sin código -> estado inválido (flujo no iniciado correctamente)
+  if (!code.trim()) {
     return (
-      <section className="verify-page" aria-label="Restablecer contraseña - enlace inválido">
+      <section className="verify-page" aria-label="Restablecer contraseña - código no válido">
         <div className="verify-container">
           <div className="verify-card">
             <div className="modal-logo" style={{ marginBottom: 16 }}>
               <SomnguardLogoStatic size={80} />
             </div>
-            <h1 className="verify-title">Enlace no válido</h1>
+            <h1 className="verify-title">Código no válido</h1>
             <p className="verify-subtitle">
-              El enlace de recuperación no es válido o ha expirado.
+              Este código ya no es válido. Solicita un nuevo código.
               <br />
-              <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Solicita un nuevo enlace desde “¿Olvidaste tu contraseña?”</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Debes iniciar el flujo desde “¿Olvidaste tu contraseña?”</span>
             </p>
             <div className="form-error" style={{ display: 'block', marginTop: 12 }} role="alert">
-              No se pudo obtener el token de recuperación desde la URL.
+              No se pudo obtener el código de recuperación. Solicita un nuevo código.
             </div>
             <button className="btn-submit" onClick={onBack} style={{ marginTop: 16 }}>
               Volver al inicio de sesión
             </button>
             <div className="modal-links" style={{ marginTop: 16 }}>
               <p>
-                <button className="modal-link accent" onClick={onBack}>Solicitar nuevo enlace</button>
+                <button className="modal-link accent" onClick={onBack}>Solicitar nuevo código</button>
               </p>
             </div>
           </div>
@@ -167,8 +165,32 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
     );
   }
 
+  // Si el código no cumple formato 6 dígitos, avisar (no debería pasar si vino de verify)
+  if (!hasCode) {
+    return (
+      <section className="verify-page" aria-label="Restablecer contraseña - código inválido">
+        <div className="verify-container">
+          <div className="verify-card">
+            <div className="modal-logo" style={{ marginBottom: 16 }}>
+              <SomnguardLogoStatic size={80} />
+            </div>
+            <h1 className="verify-title">Código no válido</h1>
+            <p className="verify-subtitle">
+              El código ingresado es incorrecto.
+              <br />
+              <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Debe ser un código de 6 dígitos.</span>
+            </p>
+            <button className="btn-submit" onClick={onBack} style={{ marginTop: 16 }}>
+              Solicitar nuevo código
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="verify-page" aria-label="Restablecer contraseña - pantalla completa">
+    <section className="verify-page" aria-label="Restablecer contraseña - establecer nueva contraseña">
       <div className="verify-container">
         <div className="verify-card">
           <div className="modal-logo" style={{ marginBottom: 16 }}>
@@ -177,12 +199,20 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
           <h1 className="verify-title">Restablecer contraseña</h1>
           <p className="verify-subtitle">
             Crea tu nueva contraseña.
-            <br />
-            <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Token obtenido automáticamente del enlace. Expira en 1 hora.</span>
+            {email ? (
+              <>
+                <br />
+                <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Código verificado para <strong style={{ color: 'var(--text)' }}>{email}</strong>. Expira en 15 minutos.</span>
+              </>
+            ) : (
+              <>
+                <br />
+                <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Ingresa tu nueva contraseña. Expira en 15 minutos.</span>
+              </>
+            )}
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
-            {/* token se mantiene interno, no se pide al usuario */}
             <div className="form-group">
               <label className="form-label" htmlFor="resetNewPassword">Nueva contraseña *</label>
               <div className="password-wrap">
@@ -195,14 +225,14 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
                     const v = sanitizePasswordNoSpaces(e.target.value);
                     setNewPassword(v);
                     if (touched.newPassword || touched.confirm) {
-                      const { errors: ev } = validateResetPassword(token, v, confirm);
+                      const { errors: ev } = validateResetPassword(code, v, confirm);
                       setErrors((p) => ({ ...p, newPassword: touched.newPassword ? ev.newPassword : undefined, confirm: touched.confirm ? ev.confirm : undefined }));
                     }
                   }}
                   onBlur={() => {
                     const nt = { ...touched, newPassword: true };
                     setTouched(nt);
-                    const { errors: ev } = validateResetPassword(token, newPassword, confirm);
+                    const { errors: ev } = validateResetPassword(code, newPassword, confirm);
                     setErrors((p) => ({ ...p, newPassword: ev.newPassword }));
                   }}
                   placeholder="Mín. 8 caracteres, mayúscula, número y símbolo"
@@ -236,14 +266,14 @@ export function ResetPasswordPage({ initialToken = '', onReset, onBack, onSucces
                     const v = sanitizePasswordNoSpaces(e.target.value);
                     setConfirm(v);
                     if (touched.confirm || touched.newPassword) {
-                      const { errors: ev } = validateResetPassword(token, newPassword, v);
+                      const { errors: ev } = validateResetPassword(code, newPassword, v);
                       setErrors((p) => ({ ...p, confirm: touched.confirm ? ev.confirm : undefined }));
                     }
                   }}
                   onBlur={() => {
                     const nt = { ...touched, confirm: true };
                     setTouched(nt);
-                    const { errors: ev } = validateResetPassword(token, newPassword, confirm);
+                    const { errors: ev } = validateResetPassword(code, newPassword, confirm);
                     setErrors((p) => ({ ...p, confirm: ev.confirm }));
                   }}
                   placeholder="Repite la nueva contraseña"
