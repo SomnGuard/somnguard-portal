@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+﻿import { useRef, useState } from 'react';
 import { SomnguardLogoStatic } from '../../../shared/ui/SomnguardLogo';
 import { sanitizeCode, validateVerifyCode } from '../../../shared/lib/validation';
 import { useToast } from '../../../shared/ui/Toast';
@@ -6,7 +6,7 @@ import { ApiError, getUserMessage, mapDetailsToFieldErrors } from '../../../shar
 
 type Props = {
   email?: string;
-  onVerify: (code: string) => Promise<void>;
+  onVerify: (code: string, email?: string) => Promise<void>;
   onBack: () => void;
   onSuccess: (code: string) => void;
   onResend?: () => void;
@@ -85,7 +85,7 @@ export function VerifyResetCodePage({ email = '', onVerify, onBack, onSuccess, o
     setErrors({});
     setSubmitting(true);
     try {
-      await onVerify(code);
+      await onVerify(code, email);
       toast({ title: 'Código válido', msg: 'Código verificado correctamente.', type: 'success' });
       onSuccess(code);
     } catch (err: unknown) {

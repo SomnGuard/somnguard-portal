@@ -330,8 +330,10 @@ export async function forgotPasswordApi(email: string): Promise<{ message: strin
 
 // POST /api/v1/auth/verify-reset-code { code: "147782" } -> { message }
 // Backend acepta alias token/code, solo valida (no consume). 400 si inválido/expirado
-export async function verifyResetCodeApi(code: string): Promise<{ message: string }> {
-  return httpRequest<{ message: string }>(endpoints.auth.verifyResetCode, HTTP.POST, { code });
+export async function verifyResetCodeApi(code: string, email?: string): Promise<{ message: string }> {
+  const body: Record<string, string> = { code };
+  if (email && email.trim()) body.email = email.trim().toLowerCase();
+  return httpRequest<{ message: string }>(endpoints.auth.verifyResetCode, HTTP.POST, body);
 }
 
 // POST /api/v1/auth/refresh { refreshToken } -> LoginResponse { accessToken, refreshToken }
@@ -355,11 +357,16 @@ export async function logoutApi(): Promise<void> {
 export interface ResetPasswordPayload {
   token: string;
   newPassword: string;
+  email?: string;
 }
 
 export async function resetPasswordApi(payload: ResetPasswordPayload): Promise<{ message: string }> {
-  return httpRequest<{ message: string }>(endpoints.auth.resetPassword, HTTP.POST, {
+  const body: Record<string, string> = {
     token: payload.token,
     newPassword: payload.newPassword,
-  });
+  };
+  if (payload.email && payload.email.trim()) {
+    body.email = payload.email.trim().toLowerCase();
+  }
+  return httpRequest<{ message: string }>(endpoints.auth.resetPassword, HTTP.POST, body);
 }

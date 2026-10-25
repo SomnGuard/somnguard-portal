@@ -101,7 +101,7 @@ export function ResetPasswordPage({ code, email, onReset, onBack, onSuccess }: P
     setErrors({});
     setSubmitting(true);
     try {
-      await onReset(code.trim(), newPassword);
+      await onReset(code.trim(), newPassword, email);
       setSuccess('Tu contraseña se actualizó correctamente. Debes iniciar sesión nuevamente.');
       toast({ title: 'Contraseña actualizada', msg: 'Tu contraseña se actualizó correctamente.', type: 'success' });
       setTimeout(() => {
