@@ -11,8 +11,8 @@ interface AuthState {
   register: (payload: RegisterPayload) => Promise<void>;
   verifyEmail: (payload: VerifyEmailPayload) => Promise<string>;
   forgot: (email: string) => Promise<string>;
-  verifyResetCode: (code: string) => Promise<string>;
-  resetPassword: (token: string, newPassword: string) => Promise<string>;
+  verifyResetCode: (code: string, email?: string) => Promise<string>;
+  resetPassword: (token: string, newPassword: string, email?: string) => Promise<string>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -115,13 +115,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return res.message;
   }, []);
 
-  const verifyResetCode = useCallback(async (code: string) => {
-    const res = await api.verifyResetCodeApi(code);
+  const verifyResetCode = useCallback(async (code: string, email?: string) => {
+    const res = await api.verifyResetCodeApi(code, email);
     return res.message;
   }, []);
 
-  const resetPassword = useCallback(async (token: string, newPassword: string) => {
-    const res = await api.resetPasswordApi({ token, newPassword });
+  const resetPassword = useCallback(async (token: string, newPassword: string, email?: string) => {
+    const res = await api.resetPasswordApi({ token, newPassword, email });
     return res.message;
   }, []);
 
