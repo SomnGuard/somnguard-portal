@@ -126,6 +126,8 @@ export const endpoints = {
     configRefresh: (id: string) => `${urlBase}/devices/${encodeURIComponent(id)}/config/refresh`,
   },
   admin: {
+    users: `${urlBase}/users`,
+    user: (id: string) => `${urlBase}/users/${encodeURIComponent(id)}`,
     roles: `${urlBase}/roles`,
     role: (id: string) => `${urlBase}/roles/${encodeURIComponent(id)}`,
     features: `${urlBase}/features`,

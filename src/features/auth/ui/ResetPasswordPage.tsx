@@ -11,7 +11,7 @@ import { ApiError, getUserMessage, mapDetailsToFieldErrors } from '../../../shar
 type Props = {
   code: string;
   email?: string;
-  onReset: (code: string, newPassword: string) => Promise<void>;
+  onReset: (code: string, newPassword: string, email?: string) => Promise<void>;
   onBack: () => void;
   onSuccess?: () => void;
 };
