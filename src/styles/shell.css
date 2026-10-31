@@ -1058,8 +1058,10 @@ body.sg-collapsed .app-shell .nav-group.active > .nav-group-toggle::before { lef
 .admin-config-editor-head > span { color: var(--text-muted); font-size: 10px; white-space: nowrap; }
 .admin-config-sources { margin-bottom: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(0,200,200,.05); color: var(--text-muted); font-size: 10px; }
 .admin-config-json, .admin-catalog-form textarea { width: 100%; min-height: 300px; padding: 13px; resize: vertical; border: 1px solid var(--border-soft); border-radius: 10px; background: #07111c; color: #bce5e8; font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.admin-config-json { display: block; margin: 0; overflow: auto; white-space: pre; }
 .admin-config-reason { display: grid; gap: 6px; margin-top: 12px; color: var(--text-muted); font-size: 11px; }
 .admin-config-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 13px; }
+.admin-config-action-buttons { display: flex; flex-wrap: wrap; justify-content: end; gap: 8px; }
 .admin-config-actions > span { color: var(--text-faint); font-size: 10px; overflow-wrap: anywhere; }
 .admin-rbac-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
 .admin-rbac-columns.secondary { align-items: start; }
@@ -1084,6 +1086,42 @@ body.sg-collapsed .app-shell .nav-group.active > .nav-group-toggle::before { lef
 .admin-rbac-list article button.danger { color: #ff858d; }
 .admin-rbac-hint { margin-top: 9px; color: var(--text-faint); font-size: 10px; line-height: 1.5; }
 .admin-security-tabs { margin-top: -8px; }
+.admin-users-layout { display: grid; grid-template-columns: minmax(280px,.88fr) minmax(0,1.35fr); gap: 14px; align-items: start; }
+.admin-users-list, .admin-user-details { min-width: 0; }
+.admin-users-search { display: grid; gap: 6px; margin-bottom: 10px; color: var(--text-muted); font-size: 10px; font-weight: 700; }
+.admin-users-search input { min-height: 40px; width: 100%; padding: 8px 11px; border: 1px solid var(--border-soft); border-radius: 9px; color: var(--text); background: var(--bg-input); font: inherit; font-size: 12px; }
+.admin-users-rows { max-height: 680px; overflow: auto; }
+.admin-user-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 10px; align-items: center; width: 100%; padding: 11px 7px; border: 0; border-top: 1px solid rgba(151,196,211,.08); color: inherit; background: transparent; text-align: left; cursor: pointer; }
+.admin-user-row:hover, .admin-user-row.selected { background: rgba(0,200,200,.055); }
+.admin-user-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--accent); background: rgba(0,200,200,.10); font-size: 11px; font-weight: 800; }
+.admin-user-row-copy { display: grid; gap: 4px; min-width: 0; }
+.admin-user-row-copy > strong { overflow: hidden; color: var(--text); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.admin-user-row-copy > small { overflow: hidden; color: var(--text-faint); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.admin-user-role-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.admin-user-role-chips span { padding: 3px 6px; border-radius: 10px; color: var(--text-muted); background: rgba(151,196,211,.08); font-size: 8px; }
+.admin-user-status { color: #ffb866; font-size: 9px; font-weight: 750; }
+.admin-user-status.active { color: #72d9ad; }
+.admin-user-form input:disabled { opacity: .88; }
+.admin-user-form .device-button.danger { border-color: rgba(255,110,125,.25); color: #ff929b; background: rgba(255,110,125,.08); }
+.admin-user-meta { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 13px 0; border-bottom: 1px solid rgba(151,196,211,.08); }
+.admin-user-meta > span, .admin-user-readonly > div { display: grid; gap: 4px; color: var(--text-faint); font-size: 9px; }
+.admin-user-meta strong { color: var(--text); font-size: 10px; overflow-wrap: anywhere; }
+.admin-user-readonly { display: grid; gap: 10px; padding-bottom: 13px; border-bottom: 1px solid rgba(151,196,211,.08); }
+.admin-user-readonly dt { color: var(--text-faint); font-size: 9px; }
+.admin-user-readonly dd { color: var(--text); font-size: 11px; }
+.admin-user-role-section { padding-top: 15px; }
+.admin-user-role-section .admin-rbac-card-title { margin-bottom: 8px; }
+.admin-user-assigned-roles { display: grid; gap: 7px; }
+.admin-user-assigned-roles > div { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 10px; border: 1px solid var(--border-soft); border-radius: 9px; }
+.admin-user-assigned-roles > div > span { display: grid; gap: 3px; }
+.admin-user-assigned-roles strong { color: var(--text); font-size: 10px; }
+.admin-user-assigned-roles small { color: var(--text-faint); font-size: 9px; }
+.admin-user-assigned-roles button { border: 0; color: #ff929b; background: transparent; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+.admin-users-name-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.admin-users-page .admin-rbac-refresh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: var(--text-faint); font-size: 10px; }
+.admin-users-toolbar-actions { display: flex; align-items: center; gap: 8px; }
+@media (max-width: 900px) { .admin-users-layout { grid-template-columns: 1fr; } .admin-users-rows { max-height: 380px; } }
+@media (max-width: 520px) { .admin-user-meta { grid-template-columns: 1fr; } .admin-users-name-fields { grid-template-columns: 1fr; } .admin-user-row { grid-template-columns: 34px minmax(0,1fr); } .admin-user-status { grid-column: 2; } .admin-users-toolbar-actions { flex-wrap: wrap; justify-content: end; } }
 .admin-catalog-layout { display: grid; grid-template-columns: minmax(240px,.8fr) minmax(0,1.2fr); gap: 14px; }
 .admin-catalog-list, .admin-catalog-editor { min-width: 0; padding: 16px; }
 .admin-catalog-head { display: flex; justify-content: space-between; align-items: end; gap: 10px; }

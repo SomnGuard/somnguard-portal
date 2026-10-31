@@ -67,7 +67,7 @@ export function ResetPasswordRoute() {
     <ResetPasswordPage
       code={code}
       email={email}
-      onReset={async (verifiedCode, newPassword) => { await resetPassword(verifiedCode, newPassword); }}
+      onReset={async (verifiedCode, newPassword, resetEmail) => { await resetPassword(verifiedCode, newPassword, resetEmail); }}
       onBack={() => navigate(paths.public.home)}
       onSuccess={() => navigate(paths.public.home, { state: { openLogin: true } })}
     />
