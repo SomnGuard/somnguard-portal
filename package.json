@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +17,9 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
@@ -25,6 +29,7 @@
     "oxlint": "^1.79.0",
     "playwright": "^1.62.1",
     "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.5"
   }
 }
