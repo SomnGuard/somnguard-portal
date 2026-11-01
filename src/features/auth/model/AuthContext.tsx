@@ -39,9 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await api.refreshApi().then((res) => {
           const current = getUser<User>();
           if (current && res.token) {
-            const updated = { ...current, token: res.token, refreshToken: res.refreshToken ?? current.refreshToken };
+            const updated = { ...current, token: res.token, refreshToken: undefined };
             setStoredUser(updated);
-            setTokens(res.token, res.refreshToken);
+            setTokens(res.token, null);
             setUser(updated);
             scheduleSilentRefresh(900);
           }
@@ -55,18 +55,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     hydrateMemoryFromStorage();
     const parsed = getUser<User>();
-    if (parsed?.email) {
-      const restored: User = {
-        ...parsed,
-        name: parsed.name ?? parsed.email.split('@')[0],
-        roles: Array.isArray(parsed.roles) ? parsed.roles : [],
-        permissions: Array.isArray(parsed.permissions) ? parsed.permissions : [],
-      };
-      setUser(restored);
-      if (restored.token || restored.refreshToken) scheduleSilentRefresh(900);
+    let cancelled = false;
+
+    async function restoreSession() {
+      if (parsed?.email) {
+        const restored: User = {
+          ...parsed,
+          name: parsed.name ?? parsed.email.split('@')[0],
+          roles: Array.isArray(parsed.roles) ? parsed.roles : [],
+          permissions: Array.isArray(parsed.permissions) ? parsed.permissions : [],
+        };
+        setUser(restored);
+        try {
+          const tokens = await api.refreshApi();
+          if (!tokens.token) throw new Error('La cookie de sesión no renovó el acceso');
+          const updated = { ...restored, token: tokens.token, refreshToken: undefined };
+          if (!cancelled) {
+            setTokens(tokens.token, null);
+            setStoredUser(updated);
+            setUser(updated);
+            scheduleSilentRefresh(900);
+          }
+        } catch {
+          if (!cancelled) {
+            setUser(null);
+            clearUser();
+            clearTokens();
+          }
+        }
+      }
+      if (!cancelled) setIsInitializing(false);
     }
-    setIsInitializing(false);
-    return () => clearRefreshTimer();
+
+    void restoreSession();
+    return () => {
+      cancelled = true;
+      clearRefreshTimer();
+    };
   }, [clearRefreshTimer, scheduleSilentRefresh]);
 
   useEffect(() => {
@@ -83,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const persist = useCallback((u: User | null) => {
     if (u) {
       setStoredUser(u);
-      setTokens(u.token ?? null, u.refreshToken ?? null);
+      setTokens(u.token ?? null, null);
       if (u.token || u.refreshToken) scheduleSilentRefresh(900);
     } else {
       clearUser();

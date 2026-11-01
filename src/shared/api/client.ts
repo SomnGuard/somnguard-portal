@@ -28,11 +28,10 @@ function processQueue(error: unknown): void {
 async function silentRefresh(): Promise<string | null> {
   if (isRefreshing) return null;
   const refreshToken = getRefreshToken();
-  if (!refreshToken) return null;
   isRefreshing = true;
   try {
-    // Backend usa snake_case (ver login: access_token/refresh_token).
-    const body = { refresh_token: refreshToken };
+    // El refresh token no es legible por JavaScript; el navegador envía la cookie HttpOnly.
+    const body = refreshToken ? { refresh_token: refreshToken } : {};
     const res = await fetch(endpoints.auth.refresh, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
