@@ -5,7 +5,6 @@
  */
 import { httpRequest } from '../../../shared/api/client';
 import { endpoints, HTTP } from '../../../shared/api/endpoints';
-import { getRefreshToken } from '../../../shared/api/secureStorage';
 import type { User, UserRole } from '../../../entities/user/model/types';
 
 export type { User, UserRole } from '../../../entities/user/model/types';
@@ -336,22 +335,15 @@ export async function verifyResetCodeApi(code: string, email?: string): Promise<
   return httpRequest<{ message: string }>(endpoints.auth.verifyResetCode, HTTP.POST, body);
 }
 
-// POST /api/v1/auth/refresh { refreshToken } -> LoginResponse { accessToken, refreshToken }
-// Soporta httpOnly: si no hay refreshToken en storage, envía {} y el backend lo lee de la cookie (credentials:include)
+// The API reads the refresh token from its HttpOnly cookie; the browser sends it via credentials:include.
 export async function refreshApi(): Promise<{ token: string; refreshToken?: string }> {
-  const refreshToken = getRefreshToken();
-  // El backend usa snake_case (como en el login: access_token/refresh_token).
-  const body = refreshToken ? { refresh_token: refreshToken } : {};
-  const res = await httpRequest<{ accessToken?: string; access_token?: string; token?: string; refreshToken?: string; refresh_token?: string }>(endpoints.auth.refresh, HTTP.POST, body);
+  const res = await httpRequest<{ accessToken?: string; access_token?: string; token?: string; refreshToken?: string; refresh_token?: string }>(endpoints.auth.refresh, HTTP.POST, {});
   const token = res.accessToken ?? res.access_token ?? res.token ?? '';
-  const newRefresh = res.refreshToken ?? res.refresh_token;
-  return { token, refreshToken: newRefresh };
+  return { token };
 }
 
 export async function logoutApi(): Promise<void> {
-  const refreshToken = getRefreshToken();
-  const body = refreshToken ? { refresh_token: refreshToken } : {};
-  await httpRequest<void>(endpoints.auth.logout, HTTP.POST, body);
+  await httpRequest<void>(endpoints.auth.logout, HTTP.POST, {});
 }
 
 export interface ResetPasswordPayload {
