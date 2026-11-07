@@ -26,6 +26,7 @@ import { DeviceListPage } from '../../features/device-management/ui/DeviceListPa
 import { DeviceConfigPage } from '../../features/device-management/ui/DeviceConfigPage';
 import { RequirePermission } from './guards/RequirePermission';
 import { RolesPage } from '../../features/security/ui/RolesPage';
+import { UsersPage } from '../../features/security/ui/UsersPage';
 import { CatalogsPage } from '../../features/security/ui/CatalogsPage';
 import { AdminEventsPage } from '../../features/user-events/ui/AdminEventsPage';
 import { AdminNotificationsPage } from '../../features/notifications/ui/AdminNotificationsPage';
@@ -62,7 +63,10 @@ export function AppRouter() {
               <Route path="analytics" element={<AnalyticsPage />} />
             </Route>
             <Route path="security" element={<SecurityPage />}>
-              <Route index element={<Navigate to="roles" replace />} />
+              <Route index element={<Navigate to="users" replace />} />
+              <Route element={<RequirePermission permission="USER_READ" />}>
+                <Route path="users" element={<UsersPage />} />
+              </Route>
               <Route element={<RequirePermission permission="ROLE_READ" />}>
                 <Route path="roles" element={<RolesPage />} />
               </Route>
