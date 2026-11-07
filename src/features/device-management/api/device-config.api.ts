@@ -17,25 +17,44 @@ export interface DeviceConfigStatus {
   outdated: boolean;
 }
 
-export interface DeviceConfigUpdate {
-  deviceId: string;
-  version: number;
-  updatedAt: string;
+type DeviceConfigWire = Record<string, unknown>;
+
+function normalizeDeviceConfig(data: DeviceConfigWire): DeviceConfig {
+  const metadata = new Set([
+    'deviceId', 'device_id', 'version', 'sources', 'lastConfigPullAt', 'last_config_pull_at',
+    'configuration', 'configurationEntries', 'configuration_entries',
+  ]);
+  const nested = data.configurationEntries ?? data.configuration_entries ?? data.configuration;
+  const configurationEntries = nested && typeof nested === 'object' && !Array.isArray(nested)
+    ? nested as Record<string, unknown>
+    : Object.fromEntries(Object.entries(data).filter(([key]) => !metadata.has(key)));
+  return {
+    deviceId: String(data.deviceId ?? data.device_id ?? ''),
+    version: Number(data.version ?? 0),
+    sources: (data.sources && typeof data.sources === 'object' ? data.sources : {}) as Record<string, unknown>,
+    lastConfigPullAt: (data.lastConfigPullAt ?? data.last_config_pull_at ?? null) as string | null,
+    configurationEntries,
+  };
 }
 
-export function getDeviceConfigApi(id: string) {
-  return httpRequest<DeviceConfig>(endpoints.devices.config(id), HTTP.GET);
+function normalizeDeviceConfigStatus(data: DeviceConfigWire): DeviceConfigStatus {
+  return {
+    deviceId: String(data.deviceId ?? data.device_id ?? ''),
+    appliedVersion: Number(data.appliedVersion ?? data.applied_version ?? 0),
+    availableVersion: Number(data.availableVersion ?? data.available_version ?? 0),
+    pending: Boolean(data.pending),
+    outdated: Boolean(data.outdated),
+  };
 }
 
-export function getDeviceConfigStatusApi(id: string) {
-  return httpRequest<DeviceConfigStatus>(endpoints.devices.configStatus(id), HTTP.GET);
+export async function getDeviceConfigApi(id: string) {
+  const data = await httpRequest<DeviceConfigWire>(endpoints.devices.config(id), HTTP.GET);
+  return normalizeDeviceConfig(data);
 }
 
-export function updateDeviceConfigApi(id: string, configuration: Record<string, unknown>, changeReason?: string) {
-  return httpRequest<DeviceConfigUpdate>(endpoints.devices.config(id), HTTP.PATCH, {
-    configuration,
-    ...(changeReason?.trim() ? { changeReason: changeReason.trim() } : {}),
-  });
+export async function getDeviceConfigStatusApi(id: string) {
+  const data = await httpRequest<DeviceConfigWire>(endpoints.devices.configStatus(id), HTTP.GET);
+  return normalizeDeviceConfigStatus(data);
 }
 
 export function requestDeviceConfigRefreshApi(id: string) {

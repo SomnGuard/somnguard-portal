@@ -14,6 +14,7 @@ export function AdminLayout() {
         eventsGroup([{ to: paths.admin.events, label: 'Historial' }]),
         notificationsGroup([{ to: paths.admin.notifications, label: 'Centro de avisos' }]),
         securityGroup([
+          { to: paths.admin.securityUsers, label: 'Usuarios' },
           { to: paths.admin.securityRoles, label: 'Roles y permisos' },
           { to: paths.admin.catalogs, label: 'Catálogos' },
         ]),

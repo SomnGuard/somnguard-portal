@@ -33,6 +33,7 @@ coverage
 .cache
 .parcel-cache
 .vite
+.vitest
 .turbo
 
 # TypeScript

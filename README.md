@@ -6,7 +6,7 @@ Frontend web para monitoreo de somnolencia al volante. Migrado a **Arquitectura 
 
 - **Vite 8.2.2** + `@vitejs/plugin-react 6.1.0`
 - **React 19.2.8** + **TypeScript 6.0.2**
-- Router: `react-router-dom 7.18.4` + Context API + `localStorage` + `fetch` nativo
+- Router: `react-router-dom 7.18.4` + Context API + access token en memoria + cookie de refresh `HttpOnly` + `fetch` nativo
 - Lint: `oxlint`
 
 ## Estructura del proyecto
@@ -28,7 +28,7 @@ Somnguard-web/
     ├── features/                 # Vertical slices por dominio (dueñas de su lógica)
     │   ├── auth/
     │   │   ├── api/auth.api.ts   # Service puro: loginApi, registerApi, verifyEmailApi, refreshApi, logoutApi
-    │   │   ├── model/AuthContext.tsx # Estado global auth, persistencia token/refresh, expone login/register/verifyEmail/forgot/refresh/logout
+    │   │   ├── model/AuthContext.tsx # Estado auth; tokens en memoria/cookie HttpOnly, perfil sin tokens en localStorage
     │   │   └── ui/AuthModals.tsx # 3 modales (Login / Register / Forgot+Verify) con validación inline
     │   ├── dashboard/
     │   │   ├── api/dashboard.api.ts # fetchDashboardStats()
@@ -65,7 +65,7 @@ Somnguard-web/
 | Carpeta | Qué contiene | Regla |
 |---|---|---|
 | `src/app/` | `App.tsx` orquestador y `providers/AppProviders.tsx`. Solo compone features. | Puede importar `features`, `shared`, `services`. Nunca al revés. |
-| `src/features/auth/` | Todo de **autenticación**: `api/` (llamadas HTTP puras), `model/` (Context + persistencia `somnguard_user/token/refresh_token`), `ui/` (modales). | Dueña de su dominio. No importa de otras `features`. |
+| `src/features/auth/` | Todo de **autenticación**: `api/` (llamadas HTTP puras), `model/` (Context + perfil persistido sin tokens), `ui/` (modales). | Access token solo en memoria; refresh token en cookie `HttpOnly`, nunca en `localStorage`. |
 | `src/features/auth/api/` | `loginApi(email,password)`, `registerApi({firstName,lastName,email,phone,password})`, `verifyEmailApi({token})`, `refreshApi()`, `logoutApi()`. Solo `httpRequest + endpoints + HTTP`. Sin DOM. | Retorna `Promise`, la UI decide `loadData`. |
 | `src/features/dashboard/` | `api/` solo `fetchDashboardStats()`, `ui/` render canvas. | Igual que auth. |
 | `src/features/landing/` | Solo UI estática `Hero`. | Sin api. |
@@ -94,10 +94,12 @@ services -> re-export de features
 2. **`src/shared/api/client.ts:7`** `httpRequest<T>(url, method, data)` arma `headers {Accept, Content-Type, Authorization: Bearer <token>}`, `body: JSON.stringify(data)`, `fetch`, valida `!response.ok` parseando `{error:{code,message,details,trace_id}}`, maneja `204 -> null`.
 3. **`src/shared/api/endpoints.ts:14`** `endpoints.auth = {verifyEmail, register, refresh, logout, login}` + `HTTP = {GET,POST,PUT,DELETE}` (igual a `conts.js`).
 4. **`src/features/auth/api/auth.api.ts:40`** cada función es una línea: `httpRequest<User>(endpoints.auth.login, HTTP.POST, {email,password})`. Patrón idéntico a tu `product.js` (`getAllProducts`/`createProduct`).
-5. **`src/features/auth/model/AuthContext.tsx:6`** consume el service, hace `setUser` + `persist` en `localStorage` (`somnguard_user`, `somnguard_token`, `somnguard_refresh_token`), expone `isAuthenticated`.
+5. **`src/features/auth/model/AuthContext.tsx`** consume el service, mantiene el access token solo en memoria y persiste metadatos del usuario sin tokens en `somnguard_user`. El refresh token llega en la cookie `somnguard_refresh` (`HttpOnly`, `SameSite=Lax`); refresh/logout usan `credentials: include`.
 6. **`src/app/App.tsx:22`** usa `useAuth()` y `fetchDashboardStats()` con `INITIAL_STATS` fallback si falla, render condicional `!isAuthenticated ? <Hero> : <Dashboard stats ?? INITIAL_STATS>`.
 
 ### Auth-controller mapeado 1:1
+
+El API envía `somnguard_refresh` como cookie `HttpOnly` al iniciar sesión y al rotar el refresh token. El portal no lee ni envía el valor: el navegador lo adjunta automáticamente. En desarrollo local, `Secure` queda desactivado para permitir HTTP en localhost; en QA/producción es obligatorio.
 
 ```
 POST /api/v1/auth/verify-email  -> verifyEmailApi({token})         src/features/auth/api/auth.api.ts:58
